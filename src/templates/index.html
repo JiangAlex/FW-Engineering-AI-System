@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FW Engineering AI System Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .source-content { display: none; }
+        .source-content.open { display: block; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    <nav class="bg-blue-600 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">🚀 FW AI Dashboard</h1>
+            <div class="space-x-2">
+                <button onclick="syncData()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">同步資料</button>
+                <button onclick="generateReport()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition">生成週報</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- AI QA Section -->
+            <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
+                <h2 class="text-xl font-bold mb-4 border-b pb-2">🤖 AI QA</h2>
+                <div class="flex space-x-2 mb-3">
+                    <input type="text" id="qa-input" class="flex-1 border p-2 rounded" placeholder="詢問工程問題..." onkeydown="if(event.key==='Enter')askAI()">
+                    <button onclick="askAI()" class="bg-blue-600 text-white px-4 py-2 rounded">發送</button>
+                </div>
+                <!-- Filters (next to results) -->
+                <div class="flex space-x-2 mb-3 text-sm">
+                    <select id="filter-model" class="border p-1 rounded">
+                        <option value="">全部型號</option>
+                    </select>
+                    <select id="filter-time" class="border p-1 rounded">
+                        <option value="">全部時間</option>
+                        <option value="7">近一週</option>
+                        <option value="30">近一月</option>
+                        <option value="90">近三月</option>
+                    </select>
+                </div>
+                <div id="qa-answer" class="bg-gray-50 p-4 rounded min-h-[100px] text-sm whitespace-pre-wrap">答案將顯示於此...</div>
+                <!-- Sources -->
+                <div id="qa-sources" class="mt-3 space-y-1"></div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
+                <h2 class="text-xl font-bold mb-4 border-b pb-2">📝 筆記</h2>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <input type="text" id="note-title" class="border p-2 rounded w-1/4" placeholder="標題">
+                    <input type="text" id="note-content" class="flex-1 border p-2 rounded" placeholder="內容..." onkeydown="if(event.key==='Enter')addNote()">
+                    <input type="file" id="note-files" multiple class="border p-1 rounded text-xs">
+                    <button onclick="addNote()" class="bg-green-600 text-white px-4 py-2 rounded">新增</button>
+                </div>
+                <div id="notes-list" class="space-y-2 text-sm"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Load models for filter dropdown
+        async function loadModels() {
+            try {
+                const res = await fetch('/api/models');
+                const data = await res.json();
+                const sel = document.getElementById('filter-model');
+                data.models.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m; opt.textContent = m;
+                    sel.appendChild(opt);
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        function getDateFrom() {
+            const days = document.getElementById('filter-time').value;
+            if (!days) return null;
+            const d = new Date();
+            d.setDate(d.getDate() - parseInt(days));
+            return d.toISOString().slice(0, 10);
+        }
+
+        async function askAI() {
+            const question = document.getElementById('qa-input').value;
+            if (!question) return;
+            const answerDiv = document.getElementById('qa-answer');
+            const sourcesDiv = document.getElementById('qa-sources');
+            answerDiv.innerText = "思考中...";
+            sourcesDiv.innerHTML = "";
+
+            const body = { question };
+            const model = document.getElementById('filter-model').value;
+            const dateFrom = getDateFrom();
+            if (model) body.model = model;
+            if (dateFrom) body.date_from = dateFrom;
+
+            try {
+                const res = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                answerDiv.innerText = data.answer;
+
+                // Render sources as expandable accordion
+                if (data.sources && data.sources.length) {
+                    const typeLabel = {mail:'📧', trd:'📋TRD', log:'🔧Log', note:'📝Note'};
+                    sourcesDiv.innerHTML = '<p class="text-xs text-gray-500 font-bold mt-2">📎 來源 (點擊展開)</p>' +
+                        data.sources.map((s, i) => `
+                            <div class="border rounded text-xs">
+                                <div class="p-2 bg-gray-100 cursor-pointer hover:bg-gray-200 flex justify-between" onclick="this.nextElementSibling.classList.toggle('open')">
+                                    <span class="font-medium">${typeLabel[s.source_type]||'📧'} ${s.filename}</span>
+                                    <span class="text-gray-400">${s.date_str || ''}</span>
+                                </div>
+                                <div class="source-content p-2 text-gray-600 bg-white">${s.snippet}</div>
+                            </div>
+                        `).join('');
+                }
+            } catch (e) { answerDiv.innerText = "發生錯誤"; }
+        }
+
+        async function fetchFWData() {
+        }
+
+        async function generateReport() {
+            const btn = event.target;
+            btn.disabled = true; btn.innerText = "生成中...";
+            try {
+                const res = await fetch('/api/report/generate');
+                const data = await res.json();
+                alert("週報已生成: " + data.filename);
+                window.open('/api/download/' + data.filename, '_blank');
+            } catch (e) { alert("生成失敗"); }
+            finally { btn.disabled = false; btn.innerText = "生成週報"; }
+        }
+
+        async function syncData() {
+            const btn = event.target;
+            btn.disabled = true; btn.innerText = "同步中...";
+            try {
+                const res = await fetch('/api/pipeline/sync');
+                const data = await res.json();
+                alert(`同步完成！處理了 ${data.processed_files} 個新檔案。`);
+                fetchFWData();
+                loadModels();
+            } catch (e) { alert("同步失敗"); }
+            finally { btn.disabled = false; btn.innerText = "同步資料"; }
+        }
+
+        window.onload = () => { loadModels(); fetchFWData(); loadNotes(); };
+
+        async function loadNotes() {
+            try {
+                const res = await fetch('/api/notes');
+                const data = await res.json();
+                const div = document.getElementById('notes-list');
+                div.innerHTML = data.notes.map(n => {
+                    const attachMatch = n.content.match(/附件: (.+)$/m);
+                    const displayContent = n.content.replace(/\n\n附件: .+$/m, '');
+                    const attachHtml = attachMatch ? '<div class="mt-1">' + attachMatch[1].split(', ').map(a => `<a href="/attachments/${a}" target="_blank" class="text-blue-500 underline text-xs mr-2">📎${a}</a>`).join('') + '</div>' : '';
+                    return `
+                    <div class="flex justify-between items-start bg-gray-50 p-3 rounded">
+                        <div><span class="font-bold">${n.title}</span><span class="text-gray-400 text-xs ml-2">${n.created_at}</span><p class="text-gray-600 mt-1">${displayContent}</p>${attachHtml}</div>
+                        <div class="flex space-x-1">
+                            <button data-id="${n.id}" data-title="${encodeURIComponent(n.title)}" data-content="${encodeURIComponent(displayContent)}" onclick="editNote(this)" class="text-blue-500 hover:text-blue-700 text-xs">編輯</button>
+                            <button onclick="deleteNote(${n.id})" class="text-red-500 hover:text-red-700 text-xs">刪除</button>
+                        </div>
+                    </div>`;
+                }).join('') || '<p class="text-gray-400">尚無筆記</p>';
+            } catch(e) { console.error(e); }
+        }
+
+        async function addNote() {
+            const title = document.getElementById('note-title').value;
+            const content = document.getElementById('note-content').value;
+            if (!title || !content) return;
+            const fd = new FormData();
+            fd.append('title', title);
+            fd.append('content', content);
+            const fileInput = document.getElementById('note-files');
+            for (const f of fileInput.files) fd.append('files', f);
+            await fetch('/api/notes', { method:'POST', body: fd });
+            document.getElementById('note-title').value = '';
+            document.getElementById('note-content').value = '';
+            fileInput.value = '';
+            loadNotes();
+        }
+
+        async function deleteNote(id) {
+            if (!confirm('確定刪除？')) return;
+            await fetch('/api/notes/' + id, { method:'DELETE' });
+            loadNotes();
+        }
+
+        async function editNote(el) {
+            const id = el.dataset.id;
+            const title = decodeURIComponent(el.dataset.title);
+            const content = decodeURIComponent(el.dataset.content);
+            const newTitle = prompt('標題', title);
+            if (newTitle === null) return;
+            const newContent = prompt('內容', content);
+            if (newContent === null) return;
+            // 顯示附檔區塊
+            const container = el.closest('.bg-gray-50');
+            let editDiv = container.querySelector('.edit-attach');
+            if (!editDiv) {
+                editDiv = document.createElement('div');
+                editDiv.className = 'edit-attach mt-2 flex items-center space-x-2';
+                editDiv.innerHTML = '<input type="file" multiple class="text-xs border rounded p-1"><button class="bg-blue-500 text-white px-2 py-1 rounded text-xs">送出</button>';
+                container.appendChild(editDiv);
+            }
+            const btn = editDiv.querySelector('button');
+            const fi = editDiv.querySelector('input');
+            btn.onclick = async () => {
+                const fd = new FormData();
+                fd.append('title', newTitle);
+                fd.append('content', newContent);
+                for (const f of fi.files) fd.append('files', f);
+                await fetch('/api/notes/' + id, { method:'PUT', body: fd });
+                loadNotes();
+            };
+        }
+    </script>
+</body>
+</html>

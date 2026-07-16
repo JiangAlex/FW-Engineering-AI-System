@@ -1,0 +1,5229 @@
+# FW: WL 的重工要如何管控？=WL 占重工总量的81%
+
+- Sender: ['=?utf-8?B?cGFtZWxhX2t1byDpg63njonlsY8=?= <>']
+- Date: Tue, 26 May 2026 02:44:14 +0000
+- Source File: FW_ WL 的重工要如何管控？=WL 占重工总量的81%.msg
+
+---
+
+## ✅ Summary
+fyi
+
+---
+
+## ✅ Clean Content
+fyi
+
+---
+
+## ✅ Full Content
+fyi
+ 
+From:
+ zhaoping_li 
+李兆平
+ <> 
+Sent:
+ Monday, May 25, 2026 5:30 PM
+ enco 
+劉升順
+ <>; jingsong_lu 
+陆劲松
+ <>
+ spoo_wei 
+魏墉伸
+ <>; zoe_yen 
+顏筱蓉
+ <>; yezi_liao 
+廖素梅
+ <>; sudy_lu 
+卢玲
+ <>; grace_chen 
+陳欣亞
+ <>; monica_chen 
+陳詩妤
+ <>; ruijin_luo 
+罗瑞进
+ <>; yoyo_yu 
+余彩芹
+ <>; pamela_kuo 
+郭玉屏
+ <>; emilie_ke 
+柯媁琤
+ <>; michelle57_chen 
+陳紫瑜
+ <>; sara_hsiao 
+蕭詩樺
+ <>; misaki_chiou 
+邱婷婷
+ <>
+Subject:
+ 
+回复
+: WL 
+的重工要如何管控？
+=WL 
+占重工总量的
+81%
+ 
+Dear enco:
+ 
+感谢您的理解与支持，这里整理了这些重工明细，也请帮忙
+review
+其中的状态
+ 
+等
+pamela yoyo
+来后，我们也会再好好商量一下，看后续要如何配合才能使效益最大化
+ 
+谢谢！
+ 
+Best Regards
+ATVN
+生管部
+-
+李兆平
+ 
+发件人
+:
+ enco 
+劉升順
+ <
+
+> 
+发送时间
+:
+ 2026
+年
+5
+月
+25
+日
+ 16:23
+收件人
+:
+ jingsong_lu 
+陆劲松
+ <
+
+>; zhaoping_li 
+李兆平
+ <
+
+>
+抄送
+:
+ spoo_wei 
+魏墉伸
+ <
+
+>; zoe_yen 
+顏筱蓉
+ <
+
+>; yezi_liao 
+廖素梅
+ <
+
+>; sudy_lu 
+卢玲
+ <
+
+>; grace_chen 
+陳欣亞
+ <
+
+>; monica_chen 
+陳詩妤
+ <
+
+>; ruijin_luo 
+罗瑞进
+ <
+
+>; yoyo_yu 
+余彩芹
+ <
+
+>; pamela_kuo 
+郭玉屏
+ <
+
+>; emilie_ke 
+柯媁琤
+ <
+
+>; michelle57_chen 
+陳紫瑜
+ <
+
+>; sara_hsiao 
+蕭詩樺
+ <
+
+>; misaki_chiou 
+邱婷婷
+ <
+
+>
+主题
+:
+ RE: WL 
+的重工要如何管控？
+=WL 
+占重工总量的
+81%
+ 
+Yes, Yoyo and Pamela will be visiting you in Vietnam to discuss this topic.
+ 
+ 
+ 
+ 
+ 
+ 
+Regards, 
+Enco
+ 
+From:
+ jingsong_lu 
+陆劲松
+ <
+
+> 
+Sent:
+ Monday, May 25, 2026 5:11 PM
+ enco 
+劉升順
+ <
+
+>; zhaoping_li 
+李兆平
+ <
+
+>
+ spoo_wei 
+魏墉伸
+ <
+
+>; zoe_yen 
+顏筱蓉
+ <
+
+>; yezi_liao 
+廖素梅
+ <
+
+>; sudy_lu 
+卢玲
+ <
+
+>; grace_chen 
+陳欣亞
+ <
+
+>; monica_chen 
+陳詩妤
+ <
+
+>; ruijin_luo 
+罗瑞进
+ <
+
+>; yoyo_yu 
+余彩芹
+ <
+
+>; pamela_kuo 
+郭玉屏
+ <
+
+>; emilie_ke 
+柯媁琤
+ <
+
+>; michelle57_chen 
+陳紫瑜
+ <
+
+>; sara_hsiao 
+蕭詩樺
+ <
+
+>; misaki_chiou 
+邱婷婷
+ <
+
+>
+Subject:
+ 
+回复
+: WL 
+的重工要如何管控？
+=WL 
+占重工总量的
+81%
+ 
+Dear enco:
+                  
+建议类似这种备品入仓后，按接订单再重工的产品，能否考虑简易包装入库，这样可缩短重工的时间及减少成本，
+ 
+发件人
+:
+ enco 
+劉升順
+ <
+
+> 
+发送时间
+:
+ 2026
+年
+5
+月
+25
+日
+ 15:29
+收件人
+:
+ zhaoping_li 
+李兆平
+ <
+
+>
+抄送
+:
+ spoo_wei 
+魏墉伸
+ <
+
+>; zoe_yen 
+顏筱蓉
+ <
+
+>; yezi_liao 
+廖素梅
+ <
+
+>; sudy_lu 
+卢玲
+ <
+
+>; grace_chen 
+陳欣亞
+ <
+
+>; monica_chen 
+陳詩妤
+ <
+
+>; jingsong_lu 
+陆劲松
+ <
+
+>; ruijin_luo 
+罗瑞进
+ <
+
+>; yoyo_yu 
+余彩芹
+ <
+
+>; pamela_kuo 
+郭玉屏
+ <
+
+>; emilie_ke 
+柯媁琤
+ <
+
+>; michelle57_chen 
+陳紫瑜
+ <
+
+>; sara_hsiao 
+蕭詩樺
+ <
+
+>; misaki_chiou 
+邱婷婷
+ <
+
+>
+主题
+:
+ RE: WL 
+的重工要如何管控？
+=WL 
+占重工总量的
+81%
+ 
+兆平
+,
+I understand your concern, we will improve this.
+We can not build high inventory for many different skus to support our business, it will increase our inventory level, 
+instead of holding the stock not moving, we prefer to rework it whenever we receive the PO.
+ 
+ 
+ 
+ 
+ 
+ 
+Regards, 
+Enco
+ 
+From:
+ zhaoping_li 
+李兆平
+ <
+
+> 
+Sent:
+ Monday, May 25, 2026 3:47 PM
+ yoyo_yu 
+余彩芹
+ <
+
+>; pamela_kuo 
+郭玉屏
+ <
+
+>; emilie_ke 
+柯媁琤
+ <
+
+>; michelle57_chen 
+陳紫瑜
+ <
+
+>; sara_hsiao 
+蕭詩樺
+ <
+
+>; misaki_chiou 
+邱婷婷
+ <
+
+>
+ spoo_wei 
+魏墉伸
+ <
+
+>; zoe_yen 
+顏筱蓉
+ <
+
+>; yezi_liao 
+廖素梅
+ <
+
+>; sudy_lu 
+卢玲
+ <
+
+>; grace_chen 
+陳欣亞
+ <
+
+>; monica_chen 
+陳詩妤
+ <
+
+>; enco 
+劉升順
+ <
+
+>; jingsong_lu 
+陆劲松
+ <
+
+>; ruijin_luo 
+罗瑞进
+ <
+
+>
+Subject:
+ WL 
+的重工要如何管控？
+=WL 
+占重工总量的
+81%
+ 
+Dear WL Team:
+ 
+如下为所有客户
+26
+年的重工数量，
+WL 
+占重工总量的
+81%
+你们重工要如何管控？每个月都是成百上千的重工，永远都是重工第一名，这样同样也是在严重浪费公司的成本，请引起重视！
+ 
+ 
+ 
+Best Regards
+ATVN
+生管部
+-
+李兆平
+ 
+发件人
+:
+ 
+余彩芹
+ <
+
+> 
+发送时间
+:
+ 2026
+年
+5
+月
+6
+日
+ 11:29
+收件人
+:
+ pamela_kuo 
+郭玉屏
+ <
+
+>; emilie_ke 
+柯媁琤
+ <
+
+>; michelle57_chen 
+陳紫瑜
+ <
+
+>; sara_hsiao 
+蕭詩樺
+ <
+
+>; misaki_chiou 
+邱婷婷
+ <
+
+>
+抄送
+:
+ spoo_wei 
+魏墉伸
+ <
+
+>; zoe_yen 
+顏筱蓉
+ <
+
+>; yezi_liao 
+廖素梅
+ <
+
+>; sudy_lu 
+卢玲
+ <
+
+>; zhaoping_li 
+李兆平
+ <
+
+>; grace_chen 
+陳欣亞
+ <
+
+>; monica_chen 
+陳詩妤
+ <
+
+>; enco 
+劉升順
+ <
+
+>
+主题
+:
+ Re: WL Switch+wifi 
+订单状态产出状态
+0506
+ 
+Dear Pamela,Emilie:
+ 
+  WL 
+产出更新如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+Model   (L18
+p/N
+wo
+QTY
+入库时间
+入库时间
+Vnet4624T
+F0TMX4628015S
+G25C491V
+1080
+2026/5/2
+5
+月
+16
+日
+SC08P
+F0LWLSC08402A
+G263075V
+667
+2026/5/2
+5
+月
+8
+日
+ECS4150-28T-EU
+F0TMX4628203S
+G264487V
+200
+2026/5/2
+5
+月
+9
+日
+ECS4155-30T
+F0PWL4155004A
+G25B073V
+80
+2026/5/2
+5
+月
+11
+日
+SC08P UK
+F0LWLSC08301A
+G263524V
+200
+2026/5/2
+5
+月
+11
+日
+ECS4100-12T v2 IN
+F0LEC4100I02Z
+G262117V
+466
+2026/5/2
+5
+月
+12
+日
+SC24P
+F0LWLSC24401A
+G263074V
+960
+2026/5/2
+5
+月
+15
+日
+SC08
+F0LWLSC08401A
+G263470V
+280
+2026/5/9
+5
+月
+16
+日
+ECS5520-18T (EU)
+F0PEC5520203S
+R264097V
+50
+2026/5/9
+5
+月
+18
+日
+ECS4100-12T EU
+F0LEC4100203Z
+G263027V
+160
+2026/5/9
+5
+月
+18
+日
+ECS4100-12T US
+F0LEC4100400Z
+G263548V
+200
+2026/5/9
+5
+月
+18
+日
+ECS2100-10P EU
+F0LEC2000203Z
+G263154V
+200
+2026/5/9
+5
+月
+19
+日
+SC08
+F0LWLSC08401A
+G263082V
+1018
+2026/5/9
+5
+月
+20
+日
+ECS4120-28Fv2-EU
+F0PEC4528215S
+G262226V
+360
+2026/5/9
+5
+月
+21
+日
+SC24P UK
+F0LWLSC24301A
+B264045V
+96
+2026/5/9
+5
+月
+22
+日
+SC08P
+F0LWLSC08402A
+G263468V
+360
+2026/5/9
+5
+月
+22
+日
+SC48P
+F0PWLSC48401S
+G263469V
+36
+2026/5/16
+5
+月
+25
+日
+SC48P UK
+F0PWLSC48301S
+G263525V
+28
+2026/5/16
+5
+月
+25
+日
+SC08P
+F0LWLSC08402A
+G263080V
+1030
+2026/5/16
+5
+月
+25
+日
+SC24P
+F0LWLSC24401A
+G263467V
+360
+2026/5/16
+5
+月
+26
+日
+ECS4100-12T EU
+F0LEC4100203Z
+G264236V
+360
+2026/5/16
+5
+月
+26
+日
+ECS4100-12T EU
+F0LEC4100203Z
+G261501V
+320
+2026/5/16
+5
+月
+27
+日
+ECS4100-12T US
+F0LEC4100400Z
+G264245V
+340
+2026/5/16
+5
+月
+28
+日
+SC24P
+F0LWLSC24401A
+G263079V
+1010
+2026/5/16
+5
+月
+29
+日
+ 
+Model  
+（
+L19
+p/N
+wo
+QTY
+入库时间
+入库时间
+EAP115a (TE)
+FIKWLP115005S
+B264025V
+330
+2026/5/2
+5
+月
+7
+日
+EAP115a (TE)
+FIKWLP115005S
+T264010V
+1770
+2026/5/2
+5
+月
+14
+日
+EAP115a (TE)
+FIKWLP115005S
+T264011V
+2100
+2026/5/9
+5
+月
+21
+日
+EAP104 (TL)
+FIKECP104004E
+G258007V
+1600
+2026/5/9
+5
+月
+23
+日
+EAP115a (TE)
+FIKWLP115005S
+T264012V
+2520
+2026/5/16
+5
+月
+28
+日
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Fri, Apr 24, 2026, 15:51
+Subject: Re: WL Switch+wifi 
+订单状态产出状态
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>, "enco 
+劉升順
+"<
+
+>
+魏墉伸
+"<
+
+>, "zoe_yen 
+顏筱蓉
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+  WL 
+产出更新如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+Model 
+p/N
+wo
+QTY
+入库时间
+SC08
+F0LWLSC08401A
+G261385V
+566
+4
+月
+28
+日
+SC08P
+F0LWLSC08402A
+G261383V
+1394
+5
+月
+4
+日
+ECS4100-28TC-F US2
+F0LEC4328402S
+G261486V
+265
+5
+月
+6
+日
+SC30020
+F0LEC2100407Z
+B263058V
+100
+5
+月
+6
+日
+SC48P
+F0PWLSC48401S
+B262036V
+73
+5
+月
+7
+日
+SC48P
+F0PWLSC48401S
+G263076V
+73
+5
+月
+7
+日
+SC48P
+F0PWLSC48401S
+G261179V
+145
+5
+月
+7
+日
+SC08
+F0LWLSC08401A
+B264016V
+283
+5
+月
+8
+日
+SC08 UK
+F0LWLSC08302A
+G263523V
+112
+5
+月
+8
+日
+Vnet4624T
+F0TMX4628015S
+G25C491V
+1080
+5/9* 300
+，
+ 5/15*780
+SC08P
+F0LWLSC08402A
+G263075V
+667
+5
+月
+11
+日
+SC08P UK
+F0LWLSC08301A
+G263524V
+200
+5
+月
+11
+日
+ECS4100-12T v2 IN
+F0LEC4100I02Z
+G262117V
+466
+5
+月
+12
+日
+SC24P
+F0LWLSC24401A
+G263074V
+1010
+5
+月
+15
+日
+ECS4150-28P-EU
+F0TMX4628202S
+G25C165V
+200
+5
+月
+18
+日
+ECS4155-30T
+F0PWL4155004A
+G25B073V
+80
+5
+月
+18
+日
+ECS5520-18T (EU)
+F0PEC5520203S
+R264097V
+50
+5
+月
+18
+日
+SC08
+F0LWLSC08401A
+G263082V
+1018
+5
+月
+20
+日
+SC08
+F0LWLSC08401A
+G263470V
+280
+5
+月
+21
+日
+SC08P
+F0LWLSC08402A
+G263468V
+360
+5
+月
+21
+日
+SC08P
+F0LWLSC08402A
+G263080V
+1030
+5
+月
+23
+日
+ 
+Model  
+p/N
+wo
+QTY
+入库时间
+EAP101_WW
+FIUEC0101001S
+G263608V
+500
+4
+月
+28
+日
+EAP102 (WW)
+FI2EC7616000S
+G261380V
+300
+4
+月
+29
+日
+EAP105 (WW)
+FI2WL1050001S
+G263354V
+200
+5
+月
+4
+日
+EAP104 (L-SHA)
+FIKWLP104002E
+G264270V
+550
+5
+月
+7
+日
+EAP101 (T)
+FIUEC0101003S
+K264096V
+600
+5
+月
+11
+日
+EAP115a (TE)
+FIKWLP115005S
+B264025V
+330
+5
+月
+12
+日
+EAP115a (TE)
+FIKWLP115005S
+T264010V
+1770
+5
+月
+15
+日
+EAP104 (TL)
+FIKECP104004E
+G258007V
+1600
+5
+月
+21
+日
+EAP115a (TE)
+FIKWLP115005S
+T264011V
+2100
+5
+月
+22
+日
+EAP104 (L-SHA)
+FIKWLP104002E
+G264273V
+550
+5
+月
+23
+日
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Wed, Apr 8, 2026, 12:00
+Subject: Re: WL Switch+wifi 
+订单状态产出状态
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>, "enco 
+劉升順
+"<
+
+>
+魏墉伸
+"<
+
+>, "zoe_yen 
+顏筱蓉
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+  WL 
+产出更新如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+Model  
+p/N
+wo
+QTY
+入库时间
+JioWave JWS4261P
+F0TMX4628213S
+G262132V
+1498
+2026/4/13
+SC24P
+F0LWLSC24401A
+G25C488V
+1697
+2026/4/20
+SC24P UK
+F0LWLSC24301A
+G261180V
+128
+2026/4/21
+ECS4150-28P(SHA)
+F0TMX4628410S
+G262043V
+300
+2026/4/23
+ECS4150-28P-US
+F0TMX4628402S
+G261574V
+280
+2026/4/24
+ECS4120-28Fv2-I-EU
+F0PEC4528216S
+G261502V
+70
+2026/4/24
+ECS2100-28P EU
+F0LEC2000201Z
+G263161V
+100
+2026/4/24
+ECS2100-28P
+F0LEC2000002A
+G263247V
+34
+2026/4/24
+ECS4100-12T EU
+F0LEC4100203Z
+B263036V
+60
+2026/4/27
+ECS4100-12T EU
+F0LEC4100203Z
+B263037V
+60
+2026/4/27
+ECS4100-12T EU
+F0LEC4100203Z
+G25C131V
+300
+2026/4/27
+ECS4125-10T EU
+F0PWL4125201A
+G25C462V
+500
+2026/4/28
+SC08
+F0LWLSC08401A
+G261385V
+566
+2026/4/29
+SC08P
+F0LWLSC08402A
+G261383V
+1394
+2026/5/5
+SC48P
+F0PWLSC48401S
+B262036V
+73
+2026/5/6
+SC48P
+F0PWLSC48401S
+G263076V
+73
+2026/5/6
+SC48P
+F0PWLSC48401S
+G261179V
+145
+2026/5/6
+ECS4100-12T EU
+F0LEC4100203Z
+G263027V
+530
+2026/5/7
+SC30020
+F0LEC2100407Z
+B263058V
+100
+2026/5/8
+ECS4100-28TC-F US2
+F0LEC4328402S
+G261486V
+273
+2026/5/8
+ 
+Model 
+p/N
+wo
+QTY
+入库时间
+EAP102 (SHA)
+FI2WL7616401S
+G261200V
+1200
+2026/4/11
+EAP115a (TE)
+FIKWLP115005S
+R262078V
+200
+2026/4/13
+EAP111 (T-U)
+FI2WLP111403E
+G25C134V
+50
+2026/4/15
+EAP111 (WW)
+FI2WLP111001E
+G25C133V
+230
+2026/4/16
+EAP105 (WW)
+FI2WL1050001S
+G25C472V
+230
+2026/4/15
+EAP115a (TE)
+FIKWLP115005S
+R262001V
+800
+2026/4/18
+EAP115a (TE)
+FIKWLP115005S
+R261012V
+674
+2026/4/21
+EAP104 (TL)
+FIKECP104004E
+G25A252V
+1159
+2026/4/24
+EAP101 (NoApt)
+FIUEC0101004S
+G263546V
+310
+2026/4/27
+EAP101_WW
+FIUEC0101001S
+G263608V
+500
+2026/4/28
+EAP102 (WW)
+FI2EC7616000S
+G261380V
+300
+2026/4/29
+EAP115a (TE)
+FIKWLP115005S
+R263132V
+326
+2026/5/4
+EAP105 (WW)
+FI2WL1050001S
+G263354V
+200
+2026/5/5
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Thu, Mar 26, 2026, 17:26
+Subject: Re: WL Switch+wifi 
+订单状态产出状态
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>, "enco 
+劉升順
+"<
+
+>
+魏墉伸
+"<
+
+>, "zoe_yen 
+顏筱蓉
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+  WL 
+产出更新如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+Model 
+p/N
+wo
+QTY
+入库时间
+L18 
+线体
+SC24P UK
+F0LWLSC24301A
+G261475V
+96
+2026/3/28
+SC08P UK
+F0LWLSC08301A
+G261476V
+200
+2026/3/28
+SC08
+F0LWLSC08401A
+B263059V
+20
+2026/3/28
+SC24P
+F0LWLSC24401A
+G261176V
+1010
+2026/4/2
+SC08P
+F0LWLSC08402A
+G261177V
+1232
+2026/4/4
+SC08
+F0LWLSC08401A
+G261178V
+566
+2026/4/6
+JioWave JWS4261P
+F0TMX4628213S
+G262132V
+1498
+2026/4/10
+SC24P
+F0LWLSC24401A
+G25C488V
+1697
+2026/4/17
+SC24P UK
+F0LWLSC24301A
+G261180V
+128
+2026/4/18
+SC08
+F0LWLSC08401A
+G261385V
+566
+2026/4/21
+SC08P
+F0LWLSC08402A
+G261383V
+1394
+2026/4/24
+Vnet4624T
+F0TMX4628015S
+G262045V
+280
+2026/4/28
+ 
+Model 
+p/N
+wo
+QTY
+入库时间
+EAP104 (SHA)
+FIKWLP104001E
+G262228V
+720
+2026/3/27
+EAP111 (IN)
+FI2WLP111I01E
+G25C294V
+1500
+2026/4/3
+EAP102 (SHA)
+FI2WL7616401S
+B263049V
+50
+2026/4/4
+ECS4150-28P(SHA)
+F0TMX4628410S
+B261021V
+50
+2026/4/4
+EAP105 (TE)
+FI2WL1050008S
+G263143V
+500
+2026/4/7
+AP-N506H
+FIKWLN506001A
+R25B082V
+100
+2026/4/6
+AP-N516-1025-WL
+FI2WLN516002S
+R25B091V
+50
+2026/4/6
+ECS4125-10P(SHA)
+F0PWL4310401Z
+B262037V
+50
+2026/4/8
+ECS4150-54P(SHA)
+F0TCH5720409S
+B261022V
+50
+2026/4/8
+EAP102 (SHA)
+FI2WL7616401S
+G261200V
+1200
+2026/4/11
+EAP115a (T)
+FIKWLP115005S
+R262078V
+200
+2026/4/13
+EAP105 (WW)
+FI2WL1050001S
+G25C472V
+230
+2026/4/14
+EAP111 (T-U)
+FI2WLP111403E
+G25C134V
+50
+2026/4/15
+EAP111 (WW)
+FI2WLP111001E
+G25C133V
+230
+2026/4/15
+EAP104 (TL)
+FIKECP104004E
+G25A252V
+1159
+2026/4/24
+ECS4150-28P(SHA)
+F0TMX4628410S
+G262043V
+300
+2026/4/28
+ECS4150-28P-US
+F0TMX4628402S
+G261574V
+280
+2026/4/28
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Fri, Mar 13, 2026, 12:05
+Subject: Re: WL Switch+wifi 
+订单状态产出状态
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>, "enco 
+劉升順
+"<
+
+>
+魏墉伸
+"<
+
+>, "zoe_yen 
+顏筱蓉
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+  WL 
+产出更新如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+Model 
+p/N
+WO
+QTY
+入库时间
+Remark
+JioWave JWS2261P
+F0LEC2100I01Z
+B262035V
+1200
+2026/3/13
+Vnet4624T
+F0TMX4628015S
+G25A631V
+620
+2026/3/19
+ECS2100-10P
+F0LEC2000004A
+G25A238V
+480
+2026/3/17
+ECS2100-10P
+F0LEC2000004A
+G25C446V
+464
+2026/3/18
+ECS4155-30P
+F0PWL4155003A
+G25A280V
+300
+2026/3/19
+ECS4120-28Fv2-I_JIO
+F0PEC4528I02S
+G262200V
+100
+2026/3/21
+S1A522A
+F0TWL4150401S
+B262001V
+100
+2026/3/21
+ECS4650-54T-US
+F0TCH5720403S
+B262012V
+80
+2026/3/21
+ECS4100-12T US
+F0LEC4100400Z
+G262201V
+160
+2026/3/20
+ECS4100-12T EU
+F0LEC4100203Z
+G261207V
+460
+2026/3/21
+JioWave JWS2261P
+F0LEC2100I01Z
+G261377V
+1492
+2026/3/26
+ECS2100-10P
+F0LEC2000004A
+G263156V
+500
+2026/3/27
+SC24P UK
+F0LWLSC24301A
+G261475V
+96
+2026/3/28
+SC24P
+F0LWLSC24401A
+G261176V
+1010
+2026/3/28
+SC08P UK
+F0LWLSC08301A
+G261476V
+200
+2026/3/30
+SC08P
+F0LWLSC08402A
+G261177V
+1232
+2026/4/4
+JioWave JWS4261P
+F0TMX4628213S
+G262132V
+1498
+2026/4/9
+因
+DDR 
+进料问题产能与
+Pronto
+对换
+Vnet4624T
+F0TMX4628015S
+G262045V
+280
+2026/4/11
+EAP105 (TE)
+FI2WL1050008S
+R262016V
+200
+2026/3/16
+EAP111 (IN)
+FI2WLP111I01E
+G25C255V
+1000
+2026/3/25
+EAP104 (SHA)
+FIKWLP104001E
+G262228V
+720
+2026/3/27
+因治具问题，产能与
+EAP111(IN)
+对换
+EAP111 (IN)
+FI2WLP111I01E
+G25C294V
+1500
+2026/4/1
+EAP105 (TE)
+FI2WL1050008S
+G263143V
+500
+2026/4/4
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Thu, Feb 26, 2026, 17:19
+Subject: Re: WL Switch+wifi 
+订单状态产出状态
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>, "enco 
+劉升順
+"<
+
+>
+魏墉伸
+"<
+
+>, "zoe_yen 
+顏筱蓉
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+ WL 
+产出更新如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+Model 
+p/N
+WO
+QTY
+入库时间
+SC08P
+F0LWLSC08402A
+G25C318V
+1727
+2026/3/4
+Vnet4624T
+F0TMX4628015S
+G262034V
+50
+2026/3/5
+SC24P
+F0LWLSC24401A
+G25C321V
+1420
+2026/3/7
+JioWave JWS2261P
+F0LEC2100I01Z
+B262028V
+50
+2026/3/6
+JioWave JWS4261P
+F0TMX4628213S
+B262029V
+50
+2026/3/6
+ECS4150-48T-F-0125-WL (IBM)
+F0PWL4150001A
+R261002V
+16
+2026/3/9
+ECS4655-30P EUK
+F0PWL4655201A
+B25C021V
+20
+2026/3/9
+ECS4655-30T EUK
+F0PWL4655202A
+B25C020V
+20
+2026/3/9
+JioWave JWS4261P
+F0TMX4628213S
+B262034V
+1200
+2026/3/13
+JioWave JWS2261P
+F0LEC2100I01Z
+B262035V
+1200
+2026/3/18
+Vnet4624T
+F0TMX4628015S
+G25A631V
+620
+2026/3/21
+ 
+Model 
+p/N
+WO
+QTY
+入库时间
+EAP111 (T)
+FI2WLP111401E
+G25A634V
+1390
+2026/3/7
+EAP104 (WW)
+FIKECP104001E
+G261379V
+300
+2026/3/9
+EAP111 (IN)
+FI2WLP111I01E
+B25C032V
+50
+2026/3/9
+ECS4120-28Fv2-EU
+F0PEC4528215S
+G261346V
+70
+2026/3/9
+EAP105 (TE)
+FI2WL1050008S
+R262013V
+100
+2026/3/11
+SP-W2M-AC1200-PoE (JP)
+FI2AC7230505X
+B262013V
+150
+2026/3/11
+SP-W2M-AC1200-PoE (JP)
+FI2AC7230505X
+B261038V
+270
+2026/3/12
+EAP102 (SHA)
+FI2WL7616401S
+B262040V
+50
+2026/3/12
+SP-W2M-AC1200-PoE (JP)
+FI2AC7230505X
+G261024V
+1890
+2026/3/19
+EAP105 (TE)
+FI2WL1050008S
+R262015V
+210
+2026/3/20
+EAP105 (TE)
+FI2WL1050008S
+R262016V
+200
+2026/3/20
+EAP104 (SHA)
+FIKWLP104001E
+G262228V
+720
+2026/3/21
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Wed, Jan 21, 2026, 14:43
+Subject: Re: WL Switch+wifi 
+订单状态产出状态
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>, "enco 
+劉升順
+"<
+
+>
+魏墉伸
+"<
+
+>, "zoe_yen 
+顏筱蓉
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+ WL 
+产出更新如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+Model 
+p/N
+WO
+QTY
+入库时间
+Remark
+ECS4155-30P (T-US)
+F0PWL4155008A
+B25C031V
+50
+2026/1/23
+SC24P UK
+F0LWLSC24301A
+B261007V
+160
+ 2026/1/23
+因等待产测一直等待，延后至
+1/23
+成品入库
+SC48P
+F0PWLSC48401S
+B261008V
+182
+ 2026/1/23
+因等待产测一直等待，延后至
+1/23
+成品入库
+ECS2100-10P (T-US)
+F0LEC2100410Z
+B25C040V
+20
+ 2026/1/24
+ECS4150-28P-US
+F0TMX4628402S
+G255466V
+200
+2026/1/24
+ECS4155-30P (T-US)
+F0PWL4155008A
+B25C034V
+209
+ 2026/1/24
+ECS2100-28T EU
+F0LEC2000202Z
+G257352V
+50
+2026/1/26
+ECS4125-10T EU
+F0PWL4125201A
+G257206V
+50
+2026/1/26
+ECS4150-54P(T-EU)
+F0TCH5720205S
+B25C037V
+50
+2026/1/26
+ECS4150-54P-EU
+F0TCH5720201S
+G25C253V
+270
+2026/1/27
+ECS4120-28Fv2-AF
+F0PEC4528018S
+G25C047V
+65
+2026/1/28
+因组装料
+A=
+船班跳票，延后到
+1/23
+到料，延后至
+1/28
+成品入库
+ECS4120-28Fv2-AF
+F0PEC4528018S
+G25C194V
+30
+2026/1/28
+因组装料
+A=
+船班跳票，延后到
+1/23
+到料，延后至
+1/28
+成品入库
+ECS4120-28Fv2-EU
+F0PEC4528215S
+G25A458V
+60
+2026/1/28
+因组装料
+A=
+船班跳票，延后到
+1/23
+到料，延后至
+1/28
+成品入库
+ECS4120-28Fv2-EU
+F0PEC4528215S
+G25B019V
+1
+ 2026/1/28
+因组装料
+A=
+船班跳票，延后到
+1/23
+到料，延后至
+1/28
+成品入库
+ECS4100-52P
+F0PEC4552001S
+G253056V
+149
+2026/1/30
+ECS4100-52P
+F0PEC4552001S
+G25C543V
+1
+2026/1/30
+ECS4150-54P-US
+F0TCH5720401S
+G25C302V
+200
+2026/1/30
+ECS5550-30X
+F0PES
+G255209V
+200
+2026/1/31
+ECS2100-10P
+F0LEC2000004A
+G25A238V
+500
+2026/2/2
+ECS2100-28PP
+F0LEC2000000A
+G25A498V
+300
+2026/2/3
+ECS4100-12T EU
+F0LEC4100203Z
+G25A182V
+370
+2026/2/4
+ 
+Model 
+ p/N
+ WO
+ QTY
+ 
+入库时间
+EAP104 (WL)
+ FIKECP104003E
+ G25C129V
+ 2200
+ 2026/1/23
+S1A527A
+ FI2WLP111402E
+ G25A633V
+ 500
+ 2026/1/24
+ 
+ 
+EAP105 (WW)
+FI2WL1050001S
+G25B241V
+160
+ 2026/1/28
+EAP104 (WW)
+FIKECP104001E
+G261070V
+120
+ 2026/1/28
+SP-W2M-AC1200-PoE (JP)
+FI2AC7230505X
+G25C458V
+280
+2026/1/30
+EAP102 (WW)
+FI2EC7616000S
+G25C169V
+1500
+2026/1/31
+OAP101 (WW)
+FI2WL0101009A
+G259187V
+150
+2026/2/2
+EAP111 (T)
+FI2WLP111401E
+G25C469V
+1800
+2026/2/6
+ 
+ 
+另外
+Pronto 
+接单接近
+10K, 
+日产能
+360 PCS/D,
+专线需要
+28
+天才能完成，目前等待产测，若下周三（
+1/28
+）前未确定是否可以继续排线，
+2
+月将停线一个班次，请协助跟催进度，谢谢！
+SC08
+F0LWLSC08401A
+G25C057V
+560
+SC08P
+F0LWLSC08402A
+G25C042V
+1020
+SC24P
+F0LWLSC24401A
+G25C040V
+1600
+SC08
+F0LWLSC08401A
+G25C319V
+255
+SC08P
+F0LWLSC08402A
+G25C318V
+1727
+SC24P
+F0LWLSC24401A
+G25C321V
+1420
+SC48P
+F0PWLSC48401S
+G25C320V
+70
+SC08
+F0LWLSC08401A
+G261178V
+566
+SC08P
+F0LWLSC08402A
+G261177V
+1273
+SC08P UK
+F0LWLSC08301A
+G261284V
+80
+SC24P
+F0LWLSC24401A
+G261176V
+1010
+SC24P UK
+F0LWLSC24301A
+G261180V
+128
+SC48P
+F0PWLSC48401S
+G261179V
+145
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Wed, Jan 7, 2026, 13:55
+Subject: WL Switch+wifi 
+订单状态产出状态
+郭玉屏
+'"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>
+劉升順
+"<
+
+>, "spoo_wei"<
+
+>, "zoe_yen 
+顏筱蓉
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+ WL 1
+月产出如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+Model 
+p/N
+WO
+QTY
+入库时间
+ECS4150-54P-EU
+F0TCH5720201S
+G259044V
+130
+2026/1/13
+ECS4150-54P-US
+F0TCH5720401S
+G25B103V
+1
+2026/1/14
+ECS4150-54P-US
+F0TCH5720401S
+G25C132V
+200
+2026/1/14
+ECS4150-54T-US
+F0TCH5720404S
+G259145V
+100
+2026/1/15
+ECS4150-54P(T-US)
+F0TCH5720405S
+B25C028V
+100
+2026/1/15
+ECS4650-54P-US
+F0TCH5720402S
+B25C022V
+50
+2026/1/16
+ECS4155-30P
+F0PWL4155003A
+G25C542V
+1
+2026/1/16
+ECS4155-30P
+F0PWL4155003A
+G258231V
+30
+2026/1/16
+ECS4155-30P (T-US)
+F0PWL4155008A
+B25C031V
+50
+2026/1/16
+ECS4150-28P-EU
+F0TMX4628202S
+G25B408V
+200
+2026/1/17
+ECS4150-28T-EU
+F0TMX4628203S
+G25B407V
+300
+2026/1/19
+ECS4150-28T-US
+F0TMX4628403S
+T255010V
+200
+2026/1/20
+ECS2100-10P
+F0LEC2000004A
+G25A215V
+210
+2026/1/21
+ECS5550-54X(T-US)
+F0PES
+B25C039V
+50
+2026/1/21
+ECS2100-28PP
+F0LEC2000000A
+G25C155V
+200
+2026/1/22
+ECS2100-10P (T-US)
+F0LEC2100410Z
+B25C040V
+20
+2026/1/22
+ECS4100-12T EU
+F0LEC4100203Z
+B25C029V
+50
+2026/1/23
+ECS4120-28Fv2-AF
+F0PEC4528018S
+G25C047V
+65
+2026/1/23
+ECS4120-28Fv2-AF
+F0PEC4528018S
+G25C194V
+30
+2026/1/23
+ECS2100-10P
+F0LEC2000004A
+G25A238V
+500
+2026/1/24
+ECS4120-28Fv2-EU
+F0PEC4528215S
+G25A458V
+60
+2026/1/26
+ECS4120-28Fv2-EU
+F0PEC4528215S
+G25B019V
+1
+2026/1/26
+ECS4150-28P-US
+F0TMX4628402S
+G255466V
+200
+2026/1/26
+ECS4125-10T EU
+F0PWL4125201A
+G257206V
+50
+2026/1/27
+ECS5550-30X
+F0PES
+G255209V
+200
+2026/1/27
+ECS4150-54P(T-EU)
+F0TCH5720205S
+B25C037V
+50
+2026/1/28
+ECS4150-54P-EU
+F0TCH5720201S
+G25C253V
+270
+2026/1/28
+ECS4150-54P-US
+F0TCH5720401S
+G25C302V
+200
+2026/1/29
+ECS2100-28T EU
+F0LEC2000202Z
+G257352V
+50
+2026/1/29
+ECS4155-30P (T-US)
+F0PWL4155008A
+B25C034V
+222
+2026/1/30
+ 
+Model 
+p/N
+WO
+QTY
+入库时间
+EAP111 (IN)
+FI2WLP111I01E
+G25B270V
+1270
+2026/1/10
+EAP111 (WW)
+FI2WLP111001E
+G25C184V
+500
+2026/1/10
+EAP101 (NoApt)
+FIUEC0101004S
+G25C126V
+1000
+2026/1/14
+SP-W2M-AC1200-PoE (JP)
+FI2AC7230505X
+G25C049V
+370
+2026/1/15
+EAP105 (WW)
+FI2WL1050001S
+G25B241V
+160
+2026/1/16
+EAP104 (WL)
+FIKECP104003E
+G25C129V
+2200
+2026/1/24
+EAP102 (WW)
+FI2EC7616000S
+G25C169V
+1500
+2026/1/28
+S1A527A
+FI2WLP111402E
+G25A633V
+500
+2026/1/29
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Thu, Dec 4, 2025, 16:44
+Subject: Re: WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+蕭詩樺
+"<
+
+>
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "enco 
+劉升順
+"<
+
+>
+Hi
+，
+Sara:
+ 
+   
+刚和
+Pamela  
+讨论，
+EAP111 (IN) 
+的物料让给
+S1A527A*400
+， 可以在
+12/29
+入库，请务必
+12/E 
+安排出货， 谢谢！
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Wed, Nov 26, 2025, 17:34
+Subject: 
+回覆：
+WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+蕭詩樺
+"<
+
+>
+郭玉屏
+"<
+
+>, "peifang_hung 
+洪珮芳
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>
+Hi
+，
+ Sara:
+ 
+     
+如下工单已经排线了，没办法拉单了
+, 
+请帮忙
+PUSH 
+客人出货，谢谢！
+QN-H-245 (E )
+FIKZX7216002E
+G259139V
+1000
+2025/12/6
+不上線
+ 
+后续
+ ZXP 
+没有另行通知，暂先不会排线的，谢谢！
+ 
+P-G25B056V-1-1-1 ->FI2WLP111402E*400PCS== 
+目前还是
+12/E 
+齐料，持续
+PULL IN 
+中，若有好消息会另行告知，谢谢！
+ 
+/yoyo
+ 
+寄件者：
+"sara_hsiao 
+蕭詩樺
+"<
+
+>
+時間：
+ 2025
+年
+11
+月
+26
+日
+ (
+週三
+) 17:03
+主旨：
+ WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+收件者：
+"yoyo_yu 
+余彩芹
+"<
+
+>, "pamela_kuo 
+郭玉屏
+"<
+
+>
+"peifang_hung 
+洪珮芳
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>
+Dear Yoyo, Pamela,
+ 
+以下這張工單不上線，請幫忙安排在
+1
+月上線
+ for 
+客戶
+2
+月份出貨
+QN-H-245 (E )
+FIKZX7216002E
+G259139V
+1000
+2025/12/6
+不上線
+ 
+以下工單因
+A  
+預計是
+12/30
+號進料，所以暫估
+2026/1/16
+號入庫，請問目前料況是否還是
+12/30
+號進料或是有提前可以讓下方工單
+12
+月產出，謝謝
+P-G25B056V-1-1-1 ->FI2WLP111402E*400PCS
+ 
+ 
+Best Regards,
+ 
+Sara Hsiao 
+蕭詩樺
+Accton Technology Corp.
+106664
+台北市大安區光復南路
+102
+號
+14
+樓
+Tel: #5293
+Fax: 
+ 
+From:
+ 
+余彩芹
+ <
+
+> 
+ 
+Sent:
+ Wednesday, November 26, 2025 4:36 PM
+ 
+ pamela_kuo 
+郭玉屏
+ <
+
+>; emilie_ke 
+柯媁琤
+ <
+
+>; sara_hsiao 
+蕭詩樺
+ <
+
+>; michelle57_chen 
+陳紫瑜
+ <
+
+>; misaki_chiou 
+邱婷婷
+ <
+
+>
+ 
+ zoe_yen 
+顏筱蓉
+ <
+
+>; spoo_wei 
+魏墉伸
+ <
+
+>; yezi_liao 
+廖素梅
+ <
+
+>; sudy_lu 
+卢玲
+ <
+
+>; zhaoping_li 
+李兆平
+ <
+
+>; enco 
+劉升順
+ <
+
+>; grace_chen 
+陳欣亞
+ <
+
+>; monica_chen 
+陳詩妤
+ <
+
+>
+ 
+Subject:
+ Re: WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+  
+Dear Pamela,Emilie:
+ 
+ WL 12
+月产出如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+ 
+Model 
+p/N
+WO
+QTY
+入库时间
+QN-H-245 (E )
+FIKZX7216002E
+G259007V
+1000
+2025/12/1
+S1A527A
+FI2WLP111402E
+B25B007V
+20
+2025/12/1
+S1A522A
+F0TWL4150401S
+B25B008V
+23
+2025/12/1
+Vnet4624T
+F0TMX4628015S
+G25A185V
+500
+2025/12/5
+QN-H-245 (E )
+FIKZX7216002E
+G259139V
+1000
+2025/12/6
+SP-W2M-AC1200-PoE (JP)
+FI2AC7230505X
+R25B094V
+120
+2025/12/8
+SC24P
+F0LWLSC24401A
+B25B011V
+210
+2025/12/9
+SC08P
+F0LWLSC08402A
+B25B012V
+1260
+2025/12/11
+ECS4120-28Fv2-AF
+F0PEC4528018S
+G25B048V
+270
+2025/12/12
+ECS4120-28Fv2-AF
+F0PEC4528018S
+G25B134V
+2
+2025/12/12
+EAP101_WW
+FIUEC0101001S
+G25B272V
+200
+2025/12/13
+EAP102 (WW)
+FI2EC7616000S
+G25B242V
+200
+2025/12/13
+EAP105 (WW)
+FI2WL1050001S
+G259268V
+140
+2025/12/15
+EAP111 (WW)
+FI2WLP111001E
+G25B263V
+480
+2025/12/15
+EAP111 (IN)
+FI2WLP111I01E
+G25B012V
+1000
+2025/12/19
+SP-W2M-AC1200-JP NESIC
+FI2AC7230501X
+G25A160V
+310
+2025/12/20
+ECS4155-30P
+F0PWL4155003A
+G258231V
+34
+2025/12/20
+ECS4155-30P (T-US)
+F0PWL4155008A
+G25B060V
+100
+2025/12/20
+ECS4120-28Fv2-I-EU
+F0PEC4528216S
+G25B402V
+54
+2025/12/22
+ECS4150-54P-EU
+F0TCH5720201S
+G25B240V
+50
+2025/12/22
+SP-W2M-AC1200-PoE (JP)
+FI2AC7230505X
+R25B096V
+1880
+2025/12/25
+Vnet4624T
+F0TMX4628015S
+G25A644V
+600
+2025/12/27
+ 
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Wed, Oct 29, 2025, 09:00
+Subject: Re: WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>
+顏筱蓉
+"<
+
+>, "spoo_wei 
+魏墉伸
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "enco 
+劉升順
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+ Switch 11
+月产出如下
+, 
+产出后请帮忙安排出货，
+ 
+谢谢！
+Model 
+p/N
+WO
+QTY
+入库时间
+ECS4120-28Fv2-I_EUS
+F0PEC4528217S
+G259135V
+105
+2025/10/31
+ECS4120-28Fv2-I_EUS
+F0PEC4528217S
+G259230V
+105
+2025/10/31
+SC08P
+F0LWLSC08402A
+G25A466V
+90
+2025/10/31
+SC24P UK
+F0LWLSC24301A
+G25A258V
+96
+2025/10/31
+ECS4155-30P
+F0PWL4155003A
+G256418V
+25
+2025/11/3
+ECS4100-12T EU
+F0LEC4100203Z
+G259619V
+270
+2025/11/3
+ECS4150-28T-EU
+F0TMX4628203S
+G25A166V
+100
+2025/11/3
+SC08P
+F0LWLSC08402A
+K25A107V
+1080
+2025/11/4
+SC08P
+F0LWLSC08402A
+G259138V
+538
+2025/11/7
+SC08P
+F0LWLSC08402A
+G256327V
+450
+2025/11/10
+SC08P
+F0LWLSC08402A
+G25A216V
+682
+2025/11/12
+SC48P
+F0PWLSC48401S
+G259260V
+36
+2025/11/13
+ECS4120-28T
+F0PEC4528000S
+G25A273V
+40
+2025/11/13
+JioWave JWS5262AG
+F0PEC4528I03S
+R25A043V
+650
+2025/11/14
+ECS5550-30X
+F0PES
+G258392V
+45
+2025/11/17
+ECS5550-30X
+F0PES
+G257336V
+50
+2025/11/17
+ECS2100-28P
+F0LEC2000002A
+G255367V
+50
+2025/11/17
+ECS2100-28PP
+F0LEC2000000A
+G256331V
+300
+2025/11/18
+ECS4120-28Fv2-US
+F0PEC4528404S
+G25A489V
+48
+2025/11/18
+ECS2100-10P (T-US)
+F0LEC2100410Z
+G259005V
+1380
+2025/11/20
+ECS4100-12T EU
+F0LEC4100203Z
+G25A182V
+300
+2025/11/21
+ECS4100-12T US
+F0LEC4100400Z
+G25A281V
+60
+2025/11/21
+ECS4150-28P-EU
+F0TMX4628202S
+G258032V
+150
+2025/11/24
+ECS4150-28T-EU
+F0TMX4628203S
+G259256V
+220
+2025/11/25
+ECS4150-28P-US
+F0TMX4628402S
+G255466V
+200
+2025/11/26
+ECS4150-54P-US
+F0TCH5720401S
+G259144V
+300
+2025/11/27
+ECS4150-54P-EU
+F0TCH5720201S
+T25A049V
+50
+2025/11/28
+ECS4155-30T
+F0PWL4155004A
+G256415V
+30
+2025/11/28
+ 
+Wifi 11
+月产出如下：产出后请帮忙安排出货，
+ 
+谢谢！
+Model 
+p/N
+WO
+QTY
+入库时间
+EAP104 (SHA)
+FIKWLP104001E
+G259510V
+400
+2025/10/31
+EAP104 (T)
+FIKECP104002E
+G258527V
+600
+2025/10/31
+EAP104 (TL)
+FIKECP104004E
+B259036V
+100
+2025/11/3
+EAP104 (TL)
+FIKECP104004E
+G258006V
+1000
+2025/11/4
+EAP104 (T)
+FIKECP104002E
+G259540V
+448
+2025/11/6
+EAP105 (SHA)
+FI2WL1050004S
+G259056V
+50
+2025/11/7
+EAP105 (WW)
+FI2WL1050001S
+G257389V
+130
+2025/11/7
+QN-I-470
+FI2ZX7616001S
+B25A036V
+1000
+2025/11/10
+QN-I-470
+FI2ZX7616001S
+B25A037V
+1000
+2025/11/12
+OAP101 (SHA)
+FI2WL0101401Z
+G257386V
+50
+2025/11/13
+EAP102 (SHA)
+FI2WL7616401S
+G25A225V
+100
+2025/11/13
+EAP111 (T)
+FI2WLP111401E
+G252446V
+1503
+2025/11/17
+SP-W2M-AC1200-JP
+FI2AC7230502X
+G25A195V
+192
+2025/11/18
+EAP104 (T)
+FIKECP104002E
+G25A624V
+552
+2025/11/20
+QN-H-245 (E )
+FIKZX7216002E
+G259007V
+1000
+2025/11/21
+EAP111 (T)
+FI2WLP111401E
+G25A448V
+1000
+2025/11/24
+EAP111 (T)
+FI2WLP111401E
+G25A504V
+500
+2025/11/25
+EAP111 (T-U)
+FI2WLP111403E
+G257397V
+200
+2025/11/26
+QN-H-245 (E )
+FIKZX7216002E
+G259139V
+1000
+2025/11/28
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Fri, Oct 17, 2025, 12:58
+Subject: Re: WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>
+顏筱蓉
+"<
+
+>, "spoo_wei 
+魏墉伸
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "enco 
+劉升順
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+ Switch 10
+月产出如下
+:
+Model 
+p/N
+WO
+QTY
+入库时间
+EAP111 (T)
+FI2WLP111401E
+G258585V
+820
+2025/10/24
+ECS4150-28T-EU
+F0TMX4628203S
+K25A074V
+296
+2025/10/24
+ECS4150-54P(SHA)
+F0TCH5720409S
+K25A063V
+71
+2025/10/24
+ECS4150-28P(SHA)
+F0TMX4628410S
+K25A064V
+11
+2025/10/24
+ECS5550-30X (SHA)
+F0PES
+K25A065V
+28
+2025/10/24
+ECS5550-54X (SHA)
+F0PES
+K25A066V
+14
+2025/10/24
+SP-W2M-AC1200-JP
+FI2AC7230502X
+G258158V
+810
+2025/10/27
+SC24P
+F0LWLSC24401A
+K25A075V
+96
+2025/10/24
+ECS4155-30P (T-US)
+F0PWL4155008A
+B25A012V
+140
+2025/10/27
+ECS5550-54X
+F0PES
+K25A082V
+10
+2025/10/27
+ECS5550-30X
+F0PES
+K25A083V
+21
+2025/10/27
+ECS4120-28T
+F0PEC4528000S
+G25A273V
+40
+2025/10/28
+ECS2100-10P (T-US)
+F0LEC2100410Z
+G259489V
+620
+2025/10/28
+ECS2100-10P (SHA)
+F0LEC2100417Z
+G25A188V
+50
+2025/10/30
+ECS4650-54P(S-US)
+F0TCH5720410S
+R257025V
+20
+2025/10/30
+ECS4650-54T(S-US)
+F0TCH5720411S
+R257024V
+20
+2025/10/30
+ECS4120-28Fv2-I_EUS
+F0PEC4528217S
+G259135V
+105
+2025/10/30
+ECS4120-28Fv2-I_EUS
+F0PEC4528217S
+G259230V
+105
+2025/10/30
+Vnet4624T
+F0TMX4628015S
+B259018V
+20
+2025/10/30
+SC24P UK
+F0LWLSC24301A
+G25A258V
+96
+2025/10/30
+SC08P
+F0LWLSC08402A
+G256327V
+452
+2025/10/31
+SC08P
+F0LWLSC08402A
+G259138V
+538
+2025/10/31
+ECS4155-30P
+F0PWL4155003A
+G256418V
+25
+2025/11/5
+ECS4150-28T-EU
+F0TMX4628203S
+G25A166V
+100
+2025/11/5
+ECS4100-12T EU
+F0LEC4100203Z
+G259619V
+270
+2025/11/6
+SC08P
+F0LWLSC08402A
+G25A216V
+680
+2025/11/7
+ 
+Wifi 10
+月产出如下：
+Model 
+p/N
+WO
+QTY
+state
+EAP111 (T)
+FI2WLP111401E
+K25A068V
+1196
+2025/10/24
+OAP101 (SHA)
+FI2WL0101401Z
+K25A062V
+50
+2025/10/27
+EAP101_WW
+FIUEC0101001S
+K259075V
+50
+2025/10/27
+EAP101 (T)
+FIUEC0101003S
+G257053V
+1020
+2025/10/28
+EAP111 (T)
+FI2WLP111401E
+G259085V
+686
+2025/10/30
+EAP104 (T)
+FIKECP104002E
+G258527V
+600
+2025/10/31
+EAP104 (SHA)
+FIKWLP104001E
+G259510V
+400
+2025/11/3
+EAP104 (TL)
+FIKECP104004E
+B259036V
+100
+2025/11/3
+OAP101 (SHA)
+FI2WL0101401Z
+G257386V
+50
+2025/11/5
+EAP104 (TL)
+FIKECP104004E
+G258006V
+1000
+2025/11/5
+EAP105 (SHA)
+FI2WL1050004S
+G259056V
+50
+2025/11/7
+QN-I-470
+FI2ZX7616001S
+G259025V
+1000
+2025/11/7
+ 
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Fri, Sep 5, 2025, 08:55
+Subject: WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>
+顏筱蓉
+"<
+
+>, "spoo_wei 
+魏墉伸
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "enco 
+劉升順
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+ Switch 9
+月产出如下：
+Model 
+p/N
+WO
+QTY
+入库时间
+JioWave JWS4261P
+F0TMX4628213S
+R257021V
+360
+9
+月
+12
+日
+JioWave JWS2261P
+F0LEC2100I01Z
+R258012V
+360
+9
+月
+12
+日
+JioWave JWS2261P
+F0LEC2100I01Z
+R258127V
+640
+9
+月
+15
+日
+JioWave JWS2261P
+F0LEC2100I01Z
+R257022V
+500
+9
+月
+16
+日
+ECS2100-28PP EU
+F0LEC2000200Z
+G257347V
+300
+9
+月
+18
+日
+JioWave JWS4261P
+F0TMX4628213S
+R258126V
+1140
+9
+月
+22
+日
+M12
+F0SWLM120002S
+R258006V
+35
+9
+月
+23
+日
+ECS4620-28F
+F0PEC4627003Z
+G256325V
+280
+9
+月
+23
+日
+ECS4620-28F-2AC EU
+F0PEC4627207Z
+G256326V
+84
+9
+月
+23
+日
+ 
+ 
+ Wifi 9
+月产出如下：
+p/N
+WO
+QTY
+入库时间
+FI2WL1050002S
+G258098V
+90
+A 
+来料印刷错误，
+ PM 
+处理中
+FIKECP104002E
+G257014V
+590
+9
+月
+10
+日
+FI2WLP111007E
+K258098V
+10
+9
+月
+12
+日
+FI2WLP111403E
+K258100V
+246
+9
+月
+12
+日
+FIKZX7216002E
+T258031V
+950
+9
+月
+15
+日
+FIUZX0270001S
+G256488V
+1050
+9
+月
+19
+日
+FIUZX0270001S
+G258348V
+900
+9
+月
+22
+日
+FIKECP104002E
+G257398V
+410
+9
+月
+23
+日
+FI2WLP111401E
+K258097V
+1099
+9
+月
+17
+日
+FI2AC7230502X
+G256318V
+462
+9
+月
+24
+日
+FI2AC7230502X
+G257378V
+258
+9
+月
+25
+日
+FI2AC7230501X
+G257237V
+172
+9
+月
+25
+日
+FIKECP104004E
+G257051V
+1000
+9
+月
+29
+日
+FIKECP104004E
+G257346V
+500
+9
+月
+29
+日
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Thu, Aug 7, 2025, 17:08
+Subject: Re: WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>
+顏筱蓉
+"<
+
+>, "spoo_wei 
+魏墉伸
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "
+赵梦
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "enco 
+劉升順
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela,Emilie:
+ 
+  
+更新如下：
+Model 
+p/N
+WO
+QTY
+入库时间
+ECS4100-52P
+F0PEC4552001S
+G257147V
+100
+8
+月
+13
+日
+ECS2100-52T EU
+F0LEC2100203Z
+G257186V
+40
+8
+月
+13
+日
+ECS5550-54X
+F0PES
+G257319V
+45
+8
+月
+13
+日
+ECS5550-54X (SHA)
+F0PES
+R257035V
+50
+8
+月
+13
+日
+ECS4120-28T
+F0PEC4528000S
+B256016V
+40
+8
+月
+15
+日
+ECS4125-10P(SHA)
+F0PWL4310401Z
+G257452V
+50
+8
+月
+15
+日
+ECS4150-28T-EU
+F0TMX4628203S
+G256386V
+100
+8
+月
+15
+日
+S1A522A
+F0TWL4150401S
+G256245V
+255
+8
+月
+15
+日
+ECS5550-30X
+F0PES
+G257320V
+45
+8
+月
+18
+日
+ECS5550-30X (SHA)
+F0PES
+R257033V
+50
+8
+月
+18
+日
+NSH-3410P
+F0LEC2100400Z
+G257468V
+101
+8
+月
+18
+日
+ECS2100-10P (SHA)
+F0LEC2100417Z
+G257038V
+50
+8
+月
+18
+日
+ECS2100-10T EU
+F0LEC2000205Z
+G253159V
+200
+8
+月
+20
+日
+ECS4120-28Fv2-I-EU
+F0PEC4528216S
+T256047V
+50
+8
+月
+20
+日
+ECS4120-28Fv2-EU
+F0PEC4528215S
+G252033V
+100
+8
+月
+20
+日
+ECS4120-28Fv2-I-US
+F0PEC4528405S
+G257349V
+50
+8
+月
+20
+日
+ECS5520-18X (SHA)
+F0PEC5520008S
+R257034V
+50
+8
+月
+21
+日
+ECS5500-12P (US)
+F0PWL5500401A
+G256416V
+50
+8
+月
+21
+日
+ECS4100-12T US
+F0LEC4100400Z
+G251022V
+694
+8
+月
+21
+日
+JioWave JWS2261P
+F0LEC2100I01Z
+R257032V
+430
+8
+月
+22
+日
+JioWave JWS2261P
+F0LEC2100I01Z
+R257019V
+570
+8
+月
+22
+日
+JioWave JWS4261P
+F0TMX4628213S
+R257052V
+430
+8
+月
+25
+日
+JioWave JWS4261P
+F0TMX4628213S
+R257020V
+570
+8
+月
+25
+日
+ 
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date: Mon, Jul 21, 2025, 13:32
+Subject: Re: WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>
+顏筱蓉
+"<
+
+>, "spoo_wei 
+魏墉伸
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "
+赵梦
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "enco 
+劉升順
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela & Emilie:
+       7
+月成品库存如下，请帮忙安排出货，谢谢！
+Part Number
+Model Number
+Oem Code
+  0-7 D
+  8-14 D
+ 15-21 D
+ 22-30 D
+ 31-45 D
+ 46-60 D
+ 61-90 D
+121-180 D
+181-270 D
+over 360 D
+271-360 D
+加總
+ - Quantity
+汇总
+FIKECP104004E
+EAP104 (TL)
+WL
+
+F0TMX4628213S
+JioWave JWS4261P
+WL
+995
+2
+997
+FI2WLP111401E
+EAP111 (T)
+WL
+3
+506
+509
+F0LEC2100I01Z
+JioWave JWS2261P
+WL
+504
+504
+FIKECP104002E
+EAP104 (T)
+WL
+382
+382
+FI2WL0101005A
+OAP101 (T)
+WL
+246
+2
+9
+257
+F0LWLSC08302A
+SC08 UK
+WL
+224
+224
+FI2WL0103003S
+OAP103 (SHA)
+WL
+
+F0TMX4628203S
+ECS4150-28T-EU
+WL
+100
+44
+144
+F0TCH5720402S
+ECS4650-54P-US
+WL
+1
+124
+125
+F0TMX4628402S
+ECS4150-28P-US
+WL
+6
+115
+121
+F0TCH5720401S
+ECS4150-54P-US
+WL
+
+FI2WLP111001E
+EAP111 (WW)
+WL
+100
+100
+F0TCH5720404S
+ECS4150-54T-US
+WL
+1
+98
+99
+F0TCH5720403S
+ECS4650-54T-US
+WL
+95
+95
+F0LWLSC08301A
+SC08P UK
+WL
+79
+79
+F0TCH5720405S
+ECS4150-54P(T-US)
+WL
+3
+47
+50
+F0TMX4628407S
+ECS4150-28P(T-US)
+WL
+48
+48
+F0PWL4310401Z
+ECS4125-10P(SHA)
+WL
+3
+42
+45
+FI2WLP111403E
+EAP111 (T-U)
+WL
+1
+39
+40
+F0PEC5520204S
+ECS5520-18X (EU)
+WL
+30
+30
+FIKECP104007E
+EAP104 (PFCC)
+WL
+29
+29
+F0PEC4310401Z
+ECS4125-10P (T-US)
+WL
+27
+27
+F0PEC4310202Z
+ECS4125-10P (T-EU)
+WL
+27
+27
+F0SEC4627000Z
+EM4510-10GSFP+
+WL
+26
+26
+FI2WL0101013A
+OAP101 (PFCC)
+WL
+24
+24
+F0PWL4155003A
+ECS4155-30P US
+WL
+23
+23
+F0PWL4125201A
+ECS4125-10T EU
+WL
+22
+22
+FI2WLP112401A
+EAP112-H (FCC)
+WL
+20
+20
+FI2WLP112005A
+EAP112-H (T)
+WL
+20
+20
+F0TMX4628202S
+ECS4150-28P-EU
+WL
+2
+18
+20
+FI2WL1050004S
+EAP105 (SHA)
+WL
+5
+13
+18
+FI2WLP112001E
+EAP112 (JP)
+WL
+18
+18
+FI2WLP112006A
+EAP112 (T)
+WL
+18
+18
+F0PWL4125001A
+ECS4125-10T US
+WL
+17
+17
+F0PWL5500403A
+ECS5500-12T (US)
+WL
+16
+16
+F0PWL4155004A
+ECS4155-30T US
+WL
+14
+14
+F0PEC4627005Z
+ECS4620-28T
+WL
+10
+10
+F0LWLSC08402A
+SC08P
+WL
+5
+5
+10
+FI2WLP111402E
+S1A527A
+WL
+8
+8
+FI2WL1050002S
+EAP105 (T)
+WL
+3
+4
+7
+FIKECP104008E
+EAP104 (PCE)
+WL
+7
+7
+F0PEC4627204Z
+ECS4620-28P EUK
+WL
+6
+6
+F0LEC2100415Z
+ECS2100-28PP (T-US)
+WL
+6
+6
+FI2WL0103002S
+OAP103 (T)
+WL
+6
+6
+F0PWLSC48401S
+SC48P
+WL
+2
+4
+6
+F0PES
+ECS5550-54X
+WL
+6
+6
+F0PEC5520203S
+ECS5520-18T (EU)
+WL
+6
+6
+F0TMX4628405S
+ECS4150-28F-I-US
+WL
+5
+5
+FI2EC7616402S
+EAP102 (PFCC)
+WL
+5
+5
+F0PEC4627003Z
+ECS4620-28F
+WL
+4
+4
+F0PWL5500401A
+ECS5500-12P (US)
+WL
+4
+4
+F0LWLSC08401A
+SC08
+WL
+2
+2
+F0LEC4328404S
+ECS4100-28TC (T-US)
+WL
+1
+1
+F0LEC2100416Z
+ECS2100-52T (T-US)
+WL
+1
+1
+F0PEC4552401S
+ECS4100-52P (T-US)
+WL
+1
+1
+总计
+
+34
+133
+84
+55
+59
+72
+14
+11
+6403
+ 
+ 
+ 
+Model 
+p/N
+WO
+QTY
+入库时间
+JioWave JWS4261P
+F0TMX4628213S
+R256014V
+1182
+7
+月
+24
+日
+ECS4150-28P(SHA)
+F0TMX4628410S
+G257138V
+250
+7
+月
+25
+日
+ECS4150-54P(SHA)
+F0TCH5720409S
+G255306V
+260
+7
+月
+25
+日
+Vnet4524G
+F0LEC4328004S
+G253061V
+1356
+8
+月
+7
+日
+SC48P
+F0PWLSC48401S
+G257188V
+36
+8
+月
+8
+日
+SC08P
+F0LWLSC08402A
+G257187V
+90
+8
+月
+8
+日
+SC08
+F0LWLSC08401A
+G252431V
+756
+8
+月
+8
+日
+SC24P
+F0LWLSC24401A
+G252432V
+1152
+8
+月
+11
+日
+ECS5550-54X
+F0PES
+G257207V
+45
+8
+月
+11
+日
+ECS5550-30X
+F0PES
+G257208V
+45
+8
+月
+11
+日
+ECS2100-52T EU
+F0LEC2100203Z
+G257186V
+40
+8
+月
+13
+日
+ECS2100-10P (SHA)
+F0LEC2100417Z
+G257038V
+50
+8
+月
+13
+日
+ECS4120-28T
+F0PEC4528000S
+B256016V
+40
+8
+月
+13
+日
+ECS4100-52P
+F0PEC4552001S
+G257147V
+100
+8
+月
+13
+日
+ECS4125-10T EU
+F0PWL4125201A
+G257206V
+250
+8
+月
+15
+日
+ECS4150-28T-EU
+F0TMX4628203S
+G256386V
+100
+8
+月
+15
+日
+S1A522A
+F0TWL4150401S
+G256245V
+255
+8
+月
+15
+日
+ 
+ 
+ 
+/yoyo
+From: "
+余彩芹
+"<
+
+>
+Date:  Thu, Jul 3, 2025, 08:58
+Subject:  WL Switch+wifi 
+订单状态
+ & 
+成品库存状态！
+郭玉屏
+"<
+
+>, "emilie_ke 
+柯媁琤
+"<
+
+>, "sara_hsiao 
+蕭詩樺
+"<
+
+>, "michelle57_chen 
+陳紫瑜
+"<
+
+>, "misaki_chiou 
+邱婷婷
+"<
+
+>
+顏筱蓉
+"<
+
+>, "spoo_wei 
+魏墉伸
+"<
+
+>, "
+廖素梅
+"<
+
+>, "
+卢玲
+"<
+
+>, "
+赵梦
+"<
+
+>, "zhaoping_li 
+李兆平
+"<
+
+>, "enco 
+劉升順
+"<
+
+>, "grace_chen 
+陳欣亞
+"<
+
+>, "monica_chen 
+陳詩妤
+"<
+
+>
+Dear Pamela & Emilie:
+       7
+月成品库存如下，请帮忙安排出货，谢谢！
+Part Number
+Model Number
+Oem Code
+  0-7 D
+  8-14 D
+15-21 D
+22-30 D
+31-45 D
+46-60 D
+61-90 D
+91-120 D
+121-180 D
+181-270 D
+over 360 D
+271-360 D
+加總
+ - Quantity
+汇总
+F0SEC4627000Z
+EM4510-10GSFP+
+WL
+48
+52
+100
+F0PEC4627005Z
+ECS4620-28T
+WL
+36
+36
+FIKECP104002E
+EAP104 (T)
+WL
+781
+4
+785
+F0PEC4627204Z
+ECS4620-28P EUK
+WL
+30
+30
+F0LEC4328404S
+ECS4100-28TC (T-US)
+WL
+3
+3
+FIKECP104004E
+EAP104 (TL)
+WL
+1
+6
+7
+FIUEC0101006S
+EAP101 (PFCC)
+WL
+40
+80
+120
+F0LEC2100415Z
+ECS2100-28PP (T-US)
+WL
+12
+6
+18
+F0PEC4627003Z
+ECS4620-28F
+WL
+39
+8
+47
+F0LEC4100405Z
+ECS4100-52T (T-US)
+WL
+1
+1
+F0LEC2100416Z
+ECS2100-52T (T-US)
+WL
+3
+3
+F0PEC5520204S
+ECS5520-18X (EU)
+WL
+60
+80
+140
+F0TMX4628203S
+ECS4150-28T-EU
+WL
+291
+77
+2
+370
+FI2WL7616401S
+EAP102 (SHA)
+WL
+
+F0PWLSC48401S
+SC48P
+WL
+9
+3
+8
+4
+24
+F0PWL5500401A
+ECS5500-12P (US)
+WL
+8
+12
+20
+F0PEC5520203S
+ECS5520-18T (EU)
+WL
+33
+33
+F0PWL4155003A
+ECS4155-30P US
+WL
+8
+17
+9
+51
+85
+F0TCH5720409S
+ECS4150-54P(SHA)
+WL
+2
+8
+10
+F0LWLSC08402A
+SC08P
+WL
+255
+30
+285
+F0PEC4310202Z
+ECS4125-10P (T-EU)
+WL
+27
+54
+81
+F0PES
+ECS5550-54X
+WL
+30
+33
+3
+66
+F0PWL4125001A
+ECS4125-10T US
+WL
+19
+17
+17
+53
+F0PES
+ECS5550-30X
+WL
+17
+26
+18
+61
+F0LEC2100209Z
+ECS2100-10P (T-EU)
+WL
+100
+100
+FI2WL0101005A
+OAP101 (T)
+WL
+1
+24
+25
+F0TCH5720402S
+ECS4650-54P-US
+WL
+120
+1
+8
+129
+F0PWL5500403A
+ECS5500-12T (US)
+WL
+16
+32
+48
+F0PEC4552401S
+ECS4100-52P (T-US)
+WL
+1
+2
+3
+F0PWL4155004A
+ECS4155-30T US
+WL
+20
+40
+60
+FI2EC7616402S
+EAP102 (PFCC)
+WL
+5
+10
+15
+F0TCH5720403S
+ECS4650-54T-US
+WL
+167
+20
+187
+F0TMX4628202S
+ECS4150-28P-EU
+WL
+4
+52
+56
+FI2WLP111007E
+EAP111 (SHA)
+WL
+1
+1
+FI2WLP111401E
+EAP111 (T)
+WL
+690
+6
+324
+1020
+F0TMX4628402S
+ECS4150-28P-US
+WL
+
+FIKECP104007E
+EAP104 (PFCC)
+WL
+87
+87
+F0LWLSC08401A
+SC08
+WL
+
+F0LWLSC24401A
+SC24P
+WL
+1672
+8
+172
+1852
+F0TMX4628407S
+ECS4150-28P(T-US)
+WL
+100
+13
+113
+F0PWL4125201A
+ECS4125-10T EU
+WL
+100
+100
+FI2WL0101013A
+OAP101 (PFCC)
+WL
+49
+1
+47
+97
+FI2WLP111403E
+EAP111 (T-U)
+WL
+960
+960
+F0LEC2100417Z
+ECS2100-10P (SHA)
+WL
+3
+3
+F0TWL4150401S
+S1A522A
+WL
+295
+2
+45
+342
+FI2WL0103002S
+OAP103 (T)
+WL
+6
+6
+12
+FIUEC0101401S
+EAP101 (SHA)
+WL
+30
+30
+F0PEC4310401Z
+ECS4125-10P (T-US)
+WL
+28
+54
+82
+FIKECP104008E
+EAP104 (PCE)
+WL
+21
+21
+FI2WLP111001E
+EAP111 (WW)
+WL
+6
+6
+FI2WLP111402E
+S1A527A
+WL
+16
+16
+F0TCH5720401S
+ECS4150-54P-US
+WL
+22
+22
+总计
+
+287
+
+222
+45
+48
+9261
+ 
+ 
+ 
+Model 
+p/N
+WO
+QTY
+入库时间
+ECS4125-10P(SHA)
+F0PWL4310401Z
+R255036V
+50
+7
+月
+7
+日
+JioWave JWS2261P
+F0LEC2100I01Z
+R256010V
+1080
+7
+月
+7
+日
+JioWave JWS4261P
+F0TMX4628213S
+R256015V
+1040
+7
+月
+9
+日
+Vnet4524G
+F0LEC4328004S
+B256068V
+50
+7
+月
+11
+日
+ECS2100-28PP
+F0LEC2000000A
+G253059V
+490
+7
+月
+11
+日
+SC30020(ECS2100-28PP)
+F0LEC2100407Z
+G255310V
+200
+7
+月
+14
+日
+ECS4150-54P-US
+F0TCH5720401S
+G256317V
+160
+7
+月
+15
+日
+ECS4150-54T-US
+F0TCH5720404S
+T252043V
+100
+7
+月
+15
+日
+ECS4150-54P(T-US)
+F0TCH5720405S
+T254003V
+50
+7
+月
+15
+日
+ECS4150-28T-EU
+F0TMX4628203S
+G257002V
+100
+7
+月
+16
+日
+ECS4150-28P(T-US)
+F0TMX4628407S
+G257001V
+50
+7
+月
+16
+日
+ECS4100-52T EU
+F0LEC4100200Z
+G255369V
+50
+7
+月
+16
+日
+ECS4100-12T EU
+F0LEC4100203Z
+G255370V
+500
+7
+月
+18
+日
+JioWave JWS2261P
+F0LEC2100I01Z
+R256012V
+570
+7
+月
+21
+日
+JioWave JWS4261P
+F0TMX4628213S
+R256014V
+630
+7
+月
+21
+日
+Vnet4524G
+F0LEC4328004S
+G253061V
+1356
+7
+月
+28
+日
+ 
+ 
+ 
+/Yoyo
+本邮件可能包含机密信息，仅供指定收件人使用。如误收，请立即通知发件人并删除。
+ 
+This e-mail may contain confidential information and is intended for the designated recipient only. If received in error, please notify the sender and delete it immediately. 
+本邮件可能包含机密信息，仅供指定收件人使用。如误收，请立即通知发件人并删除。 
+This e-mail may contain confidential information and is intended for the designated recipient only. If received in error, please notify the sender and delete it immediately.
