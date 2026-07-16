@@ -29,6 +29,7 @@
                 <div class="flex space-x-2 mb-3">
                     <input type="text" id="qa-input" class="flex-1 border p-2 rounded" placeholder="詢問工程問題..." onkeydown="if(event.key==='Enter')askAI()">
                     <button onclick="askAI()" class="bg-blue-600 text-white px-4 py-2 rounded">發送</button>
+                    <button onclick="clearQA()" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">重新</button>
                 </div>
                 <!-- Filters (next to results) -->
                 <div class="flex space-x-2 mb-3 text-sm">
@@ -52,7 +53,9 @@
                 <h2 class="text-xl font-bold mb-4 border-b pb-2">📝 筆記</h2>
                 <div class="flex flex-wrap gap-2 mb-3">
                     <input type="text" id="note-title" class="border p-2 rounded w-1/4" placeholder="標題">
-                    <input type="text" id="note-content" class="flex-1 border p-2 rounded" placeholder="內容..." onkeydown="if(event.key==='Enter')addNote()">
+                    <textarea id="note-content" class="flex-1 border p-2 rounded min-h-[80px]" placeholder="內容..." rows="3"></textarea>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-3">
                     <input type="file" id="note-files" multiple class="border p-1 rounded text-xs">
                     <button onclick="addNote()" class="bg-green-600 text-white px-4 py-2 rounded">新增</button>
                 </div>
@@ -83,6 +86,12 @@
             const d = new Date();
             d.setDate(d.getDate() - parseInt(days));
             return d.toISOString().slice(0, 10);
+        }
+
+        function clearQA() {
+            document.getElementById('qa-input').value = '';
+            document.getElementById('qa-answer').innerText = '答案將顯示於此...';
+            document.getElementById('qa-sources').innerHTML = '';
         }
 
         async function askAI() {
@@ -134,10 +143,35 @@
             try {
                 const res = await fetch('/api/report/generate');
                 const data = await res.json();
-                alert("週報已生成: " + data.filename);
-                window.open('/api/download/' + data.filename, '_blank');
-            } catch (e) { alert("生成失敗"); }
+                // Show report in qa-answer area
+                const answerDiv = document.getElementById('qa-answer');
+                answerDiv.innerText = data.report || "生成失敗";
+                // Auto-save to notes
+                const fd = new FormData();
+                fd.append('title', data.filename.replace('.md',''));
+                fd.append('content', data.report);
+                await fetch('/api/notes', { method:'POST', body: fd });
+                loadNotes();
+                // Show download link + confirmation
+                const sourcesDiv = document.getElementById('qa-sources');
+                sourcesDiv.innerHTML = `
+                    <div class="flex items-center space-x-3 mt-2">
+                        <a href="/api/download/${data.filename}" target="_blank" class="text-blue-500 underline text-sm">📥 下載週報: ${data.filename}</a>
+                        <span class="text-green-600 text-sm">✅ 已自動存入筆記</span>
+                    </div>`;
+            } catch (e) { alert("生成失敗: " + e.message); }
             finally { btn.disabled = false; btn.innerText = "生成週報"; }
+        }
+
+        async function saveReportToNote(filename) {
+            // kept for backward compatibility
+            if (!window._lastReport) return;
+            const fd = new FormData();
+            fd.append('title', window._lastReport.title);
+            fd.append('content', window._lastReport.content);
+            await fetch('/api/notes', { method:'POST', body: fd });
+            alert('已存入筆記！');
+            loadNotes();
         }
 
         async function syncData() {
@@ -165,11 +199,17 @@
                     const displayContent = n.content.replace(/\n\n附件: .+$/m, '');
                     const attachHtml = attachMatch ? '<div class="mt-1">' + attachMatch[1].split(', ').map(a => `<a href="/attachments/${a}" target="_blank" class="text-blue-500 underline text-xs mr-2">📎${a}</a>`).join('') + '</div>' : '';
                     return `
-                    <div class="flex justify-between items-start bg-gray-50 p-3 rounded">
-                        <div><span class="font-bold">${n.title}</span><span class="text-gray-400 text-xs ml-2">${n.created_at}</span><p class="text-gray-600 mt-1">${displayContent}</p>${attachHtml}</div>
-                        <div class="flex space-x-1">
-                            <button data-id="${n.id}" data-title="${encodeURIComponent(n.title)}" data-content="${encodeURIComponent(displayContent)}" onclick="editNote(this)" class="text-blue-500 hover:text-blue-700 text-xs">編輯</button>
-                            <button onclick="deleteNote(${n.id})" class="text-red-500 hover:text-red-700 text-xs">刪除</button>
+                    <div class="bg-gray-50 rounded">
+                        <div class="flex justify-between items-center p-3 cursor-pointer hover:bg-gray-100" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                            <div><span class="font-bold">${n.title}</span><span class="text-gray-400 text-xs ml-2">${n.created_at}</span></div>
+                            <div class="flex space-x-1 items-center">
+                                <button data-id="${n.id}" data-title="${encodeURIComponent(n.title)}" data-content="${encodeURIComponent(displayContent)}" onclick="event.stopPropagation();editNote(this)" class="text-blue-500 hover:text-blue-700 text-xs">編輯</button>
+                                <button onclick="event.stopPropagation();deleteNote(${n.id})" class="text-red-500 hover:text-red-700 text-xs">刪除</button>
+                                <span class="text-gray-400 text-xs ml-1">▼</span>
+                            </div>
+                        </div>
+                        <div class="hidden p-3 pt-0 border-t">
+                            <p class="text-gray-600 text-sm whitespace-pre-wrap">${displayContent}</p>${attachHtml}
                         </div>
                     </div>`;
                 }).join('') || '<p class="text-gray-400">尚無筆記</p>';
@@ -202,22 +242,29 @@
             const id = el.dataset.id;
             const title = decodeURIComponent(el.dataset.title);
             const content = decodeURIComponent(el.dataset.content);
-            const newTitle = prompt('標題', title);
-            if (newTitle === null) return;
-            const newContent = prompt('內容', content);
-            if (newContent === null) return;
-            // 顯示附檔區塊
             const container = el.closest('.bg-gray-50');
-            let editDiv = container.querySelector('.edit-attach');
-            if (!editDiv) {
-                editDiv = document.createElement('div');
-                editDiv.className = 'edit-attach mt-2 flex items-center space-x-2';
-                editDiv.innerHTML = '<input type="file" multiple class="text-xs border rounded p-1"><button class="bg-blue-500 text-white px-2 py-1 rounded text-xs">送出</button>';
-                container.appendChild(editDiv);
-            }
-            const btn = editDiv.querySelector('button');
-            const fi = editDiv.querySelector('input');
-            btn.onclick = async () => {
+
+            // Replace note display with edit form
+            const existingEdit = container.querySelector('.edit-form');
+            if (existingEdit) { existingEdit.remove(); return; }
+
+            const editDiv = document.createElement('div');
+            editDiv.className = 'edit-form mt-2 space-y-2 border-t pt-2';
+            editDiv.innerHTML = `
+                <input type="text" class="border p-2 rounded w-full" value="${title.replace(/"/g, '&quot;')}" placeholder="標題">
+                <textarea class="border p-2 rounded w-full min-h-[100px]" rows="4" placeholder="內容...">${content}</textarea>
+                <div class="flex items-center space-x-2">
+                    <input type="file" multiple class="text-xs border rounded p-1">
+                    <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs">儲存</button>
+                    <button class="bg-gray-400 text-white px-3 py-1 rounded text-xs" onclick="this.closest('.edit-form').remove()">取消</button>
+                </div>`;
+            container.appendChild(editDiv);
+
+            const saveBtn = editDiv.querySelector('button');
+            saveBtn.onclick = async () => {
+                const newTitle = editDiv.querySelector('input[type=text]').value;
+                const newContent = editDiv.querySelector('textarea').value;
+                const fi = editDiv.querySelector('input[type=file]');
                 const fd = new FormData();
                 fd.append('title', newTitle);
                 fd.append('content', newContent);
