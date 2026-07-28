@@ -6,8 +6,10 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 DB_PATH = os.path.join(PROJECT_ROOT, "knowledge", "index.db")
 
 def get_connection():
-    """Returns a connection to the SQLite database."""
-    return sqlite3.connect(DB_PATH)
+    """Returns a connection to the SQLite database with WAL mode for concurrent access."""
+    conn = sqlite3.connect(DB_PATH, timeout=60)
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
 
 def init_db():
     """Initializes the FTS5 virtual table for document search."""
@@ -100,8 +102,8 @@ def insert_chunk(filename, chunk_text, model, date_str, source_type="mail"):
     conn.commit()
     conn.close()
 
-def search_chunks(query, model=None, date_from=None, limit=5):
-    """Searches chunks with BM25 ranking, optional model/date filters. Returns [{filename, snippet, chunk_text, model, date_str}]."""
+def search_chunks(query, model=None, date_from=None, source_type=None, limit=5):
+    """Searches chunks with BM25 ranking, optional model/date/source_type filters. Returns [{filename, snippet, chunk_text, model, date_str}]."""
     import re
     conn = get_connection()
     c = conn.cursor()
@@ -115,10 +117,15 @@ def search_chunks(query, model=None, date_from=None, limit=5):
     sql = "SELECT filename, snippet(chunks, 1, '<b>', '</b>', '...', 30), chunk_text, model, date_str, source_type FROM chunks WHERE chunks MATCH ?"
     params = [clean_query]
 
+    # If source_type specified, add it to the FTS5 query for efficient filtering
+    if source_type:
+        clean_query = f"({clean_query}) AND source_type:{source_type}"
+        params = [clean_query]
+
     # Apply filters via subquery on rowid since FTS5 content columns aren't directly filterable with AND
     # We filter post-query instead
     sql += " ORDER BY rank LIMIT ?"
-    params.append(limit * 5)  # fetch more to allow post-filter
+    params.append(limit * 10)  # fetch more to allow post-filter
 
     try:
         c.execute(sql, params)
@@ -133,6 +140,8 @@ def search_chunks(query, model=None, date_from=None, limit=5):
         if model and model.upper() not in (m or "").upper():
             continue
         if date_from and (d or "") < date_from:
+            continue
+        if source_type and (src or "mail") != source_type:
             continue
         results.append({"filename": filename, "snippet": snippet, "chunk_text": chunk_text, "model": m, "date_str": d, "source_type": src or "mail"})
         if len(results) >= limit:

@@ -99,10 +99,67 @@ class TestExtractChunks:
         result = extract_chunks(md, "JioWave62420 test.md")
         assert "EAP111" in result["model"]
 
-    def test_empty_content(self):
+    def test_fallback_to_full_content_when_clean_too_short(self):
+        """When Clean Content < 100 chars, should fallback to Full Content."""
+        md = """# Test Short Clean
+
+- Sender: test@test.com
+- Date: Thu, 7 May 2026 11:33:46 +0000
+- Source File: test.msg
+
+---
+
+## ✅ Summary
+Review OK.
+
+---
+
+## ✅ Clean Content
+Hi CK,
+Review OK. Thanks.
+Best regards,
+Lanqly
+
+---
+
+## ✅ Full Content
+Hi CK,
+Review OK. Thanks.
+Best regards,
+Lanqly
+From: alex_chiang
+Date: 2026-05-07
+Subject: OEL Production readiness
+Hi Lanqly,
+Please review and double check the FDL test log for FW V5.0.5.5.
+The latest test program has been uploaded to the OEL FTP site.
+EAP111 production firmware ready.
+Best Regards,
+CK
+"""
+        result = extract_chunks(md, "JioWave62420 OEL Production readiness.md")
+        all_text = " ".join(result["chunks"])
+        # Should contain content from the reply chain (Full Content)
+        assert "FW V5.0.5.5" in all_text or "FDL test log" in all_text
+        assert "EAP111" in result["model"]
+
+    def test_no_fallback_when_clean_is_long_enough(self):
+        """When Clean Content >= 100 chars, should NOT fallback to Full Content."""
+        result = extract_chunks(SAMPLE_MD, "EAP111 test.md")
+        all_text = " ".join(result["chunks"])
+        assert "should NOT be indexed" not in all_text
+
+    def test_empty_clean_falls_back_to_full(self):
+        """When Clean Content is empty, fallback to Full Content."""
         md = "# Empty\n- Date: \n---\n## ✅ Clean Content\n\n---\n## ✅ Full Content\nstuff"
         result = extract_chunks(md, "empty.md")
-        assert result["chunks"] == [] or all(c.strip() == "" for c in result["chunks"]) or len(result["chunks"]) == 0
+        assert result["chunks"] == ["stuff"]
+
+    def test_truly_empty_content(self):
+        """When both Clean and Full Content are empty, no chunks."""
+        md = "# Empty\n- Date: \n---\n## ✅ Clean Content\n\n---\n## ✅ Full Content\n"
+        result = extract_chunks(md, "empty.md")
+        assert result["chunks"] == []
 
 
 @pytest.fixture

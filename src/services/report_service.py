@@ -8,17 +8,18 @@ REPORT_DIR = os.path.join(PROJECT_ROOT, "knowledge/report")
 
 class ReportService:
     @staticmethod
-    def generate_weekly_report(ai_client=None, limit=10):
+    def generate_weekly_report(ai_client=None, limit=20):
         """Generates a weekly engineering report based on recent mail records."""
         if not os.path.exists(MD_DIR): return "❌ Source directory not found"
         
-        files = sorted(os.listdir(MD_DIR), reverse=True)
+        # Sort by modification time (newest first)
+        files = [f for f in os.listdir(MD_DIR) if f.endswith(".md")]
+        files.sort(key=lambda f: os.path.getmtime(os.path.join(MD_DIR, f)), reverse=True)
+        
         docs = []
-        for f in files:
-            if f.endswith(".md"):
-                with open(os.path.join(MD_DIR, f), "r", encoding="utf-8") as file:
-                    docs.append(file.read())
-            if len(docs) >= limit: break
+        for f in files[:limit]:
+            with open(os.path.join(MD_DIR, f), "r", encoding="utf-8") as file:
+                docs.append(file.read())
             
         if not docs: return "❌ No documents found to generate report"
 

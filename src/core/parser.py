@@ -4,6 +4,7 @@ import email.utils
 import zipfile
 import xml.etree.ElementTree as ET
 import extract_msg
+import olefile
 from bs4 import BeautifulSoup
 
 MODEL_RE = re.compile(r"\b(EAP\d{3}[a-zA-Z]?\s?(?:\([A-Z]+\))?|ECS\d{4}[a-zA-Z]?|AP\d{4}|SW\d{4}[A-Z]?|JWS\d{4}[A-Z]?|JioWave\d+|MLTG[-\w]*|SC\d{2}[A-Z]?|Vnet\d{4}[A-Z]?)(?:\b|(?=[\s,;:).\-]|$))", re.IGNORECASE)
@@ -50,6 +51,15 @@ def extract_chunks(md_content, filename=""):
     # Extract Clean Content section (between ## ✅ Clean Content and next ## ✅ or EOF)
     clean_match = re.search(r"## ✅ Clean Content\s*\n(.*?)(?=\n## ✅|\Z)", md_content, re.DOTALL)
     text = clean_match.group(1).strip() if clean_match else ""
+
+    # Fallback: if Clean Content is too short, use Full Content instead
+    MIN_CLEAN_LENGTH = 100
+    if len(text) < MIN_CLEAN_LENGTH:
+        full_match = re.search(r"## ✅ Full Content\s*\n(.*?)(?=\n## ✅|\Z)", md_content, re.DOTALL)
+        if full_match:
+            full_text = full_match.group(1).strip()
+            if len(full_text) > len(text):
+                text = full_text
 
     if not text:
         # fallback: use everything after metadata
@@ -141,13 +151,76 @@ class MsgParser:
         return re.sub(r"[^\w\s\-\.,:/@()\n]", "", text)
 
     @staticmethod
+    def _decode_stream(ole, stream_base, codecs_to_try=("utf-16-le", "gbk", "gb18030", "utf-8")):
+        """Try to read and decode a stream from the OLE file with multiple encodings."""
+        # Try unicode stream (001F suffix) first
+        if ole.exists(stream_base + "001F"):
+            data = ole.openstream(stream_base + "001F").read()
+            # 001F streams are always UTF-16LE per MS-OXMSG spec
+            return data.decode("utf-16-le", errors="replace").rstrip("\x00")
+        # Try ANSI stream (001E suffix)
+        if ole.exists(stream_base + "001E"):
+            data = ole.openstream(stream_base + "001E").read()
+            for codec in codecs_to_try:
+                try:
+                    return data.decode(codec).rstrip("\x00")
+                except (UnicodeDecodeError, LookupError):
+                    continue
+            return data.decode("utf-8", errors="replace").rstrip("\x00")
+        return ""
+
+    @staticmethod
+    def _fallback_read_msg(file_path):
+        """Manually read MSG file streams with robust encoding handling."""
+        ole = olefile.OleFileIO(file_path)
+        try:
+            subject = MsgParser._decode_stream(ole, "__substg1.0_0037")
+            sender_name = MsgParser._decode_stream(ole, "__substg1.0_0C1A")
+            sender_email = MsgParser._decode_stream(ole, "__substg1.0_0065")
+            if not sender_email:
+                sender_email = MsgParser._decode_stream(ole, "__substg1.0_0C1F")
+            sender = f"{sender_name} <{sender_email}>" if sender_email else sender_name
+
+            # Date: try PR_CLIENT_SUBMIT_TIME (0039) or PR_MESSAGE_DELIVERY_TIME (0E06)
+            date = ""
+            for prop_id in ("__substg1.0_0039", "__substg1.0_0E06"):
+                d = MsgParser._decode_stream(ole, prop_id)
+                if d:
+                    date = d
+                    break
+
+            # Body: try HTML body (1013), then plain text body (1000)
+            body_raw = ""
+            if ole.exists("__substg1.0_1013001F"):
+                body_raw = MsgParser._decode_stream(ole, "__substg1.0_1013")
+            elif ole.exists("__substg1.0_1013001E"):
+                body_raw = MsgParser._decode_stream(ole, "__substg1.0_1013")
+            elif ole.exists("__substg1.0_10130102"):
+                # Binary HTML
+                data = ole.openstream("__substg1.0_10130102").read()
+                body_raw = data.decode("utf-8", errors="replace")
+            if not body_raw:
+                body_raw = MsgParser._decode_stream(ole, "__substg1.0_1000")
+        finally:
+            ole.close()
+
+        subject = MsgParser.normalize_text(subject)
+        return subject, sender, date, body_raw
+
+    @staticmethod
     def msg_to_md(file_path):
-        msg = extract_msg.Message(file_path)
-        subject = MsgParser.normalize_text(MsgParser.safe_str(msg.subject))
-        sender = MsgParser.safe_str(msg.sender)
-        date = MsgParser.safe_str(msg.date or "")
-        body_raw = MsgParser.safe_str(msg.htmlBody or msg.body or "")
-        msg.close()
+        # Try default parsing; if encoding error occurs, use fallback with manual stream reading
+        try:
+            msg = extract_msg.Message(file_path)
+            subject = MsgParser.normalize_text(MsgParser.safe_str(msg.subject))
+            sender = MsgParser.safe_str(msg.sender)
+            date = MsgParser.safe_str(msg.date or "")
+            body_raw = MsgParser.safe_str(msg.htmlBody or msg.body or "")
+            msg.close()
+        except (UnicodeDecodeError, LookupError):
+            # Fallback: open with olefile and decode streams manually
+            subject, sender, date, body_raw = MsgParser._fallback_read_msg(file_path)
+
 
         full_content = MsgParser.normalize_text(MsgParser.html_to_text(body_raw))
         full_content = MsgParser.remove_recipients(full_content)

@@ -1,5 +1,6 @@
 import os
 import sys
+import sqlite3
 
 # Add project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -12,9 +13,12 @@ INPUT_DIR = os.path.join(PROJECT_ROOT, "knowledge/raw_msg")
 OUTPUT_DIR = os.path.join(PROJECT_ROOT, "knowledge/md")
 TRD_DIR = os.path.join(PROJECT_ROOT, "knowledge/TRD")
 LOG_DIR = os.path.join(PROJECT_ROOT, "knowledge/ProductLogFiles")
+IMAGE_DIR = os.path.join(PROJECT_ROOT, "knowledge/image")
 
 def run_pipeline(force_reindex=False):
-    """Runs the full pipeline: MSG -> MD -> SQLite."""
+    """Runs the full pipeline: MSG -> MD -> SQLite.
+    Returns dict with {processed, failed, found, indexed, chunks} counts.
+    """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     init_db()
     
@@ -26,6 +30,7 @@ def run_pipeline(force_reindex=False):
     print(f"🔍 Found {len(files)} msg files")
 
     processed_count = 0
+    failed_files = []
     for f in files:
         msg_path = os.path.join(INPUT_DIR, f)
         md_filename = f.replace(".msg", ".md")
@@ -47,16 +52,23 @@ def run_pipeline(force_reindex=False):
             processed_count += 1
         except Exception as e:
             print(f"❌ Failed {f}: {e}")
+            failed_files.append({"file": f, "error": str(e)})
 
     # Step 2: Ensure all existing .md files are indexed in DB
     indexed = _reindex_existing(force_reindex)
     print(f"📄 Indexed {indexed} existing md files into DB")
 
     # Step 3: Rebuild chunk index for QA
-    chunk_count = _rebuild_chunks()
+    chunk_count = _rebuild_chunks(force=force_reindex or processed_count > 0)
     print(f"🔍 Built {chunk_count} chunks for QA search")
     
-    return processed_count
+    return {
+        "found": len(files),
+        "processed": processed_count,
+        "failed": failed_files,
+        "indexed": indexed,
+        "chunks": chunk_count,
+    }
 
 
 def _reindex_existing(force=False):
@@ -79,11 +91,62 @@ def _reindex_existing(force=False):
         count += 1
     return count
 
-def _rebuild_chunks():
-    """Rebuilds the chunks FTS5 index from all sources."""
-    clear_chunks()
-    init_chunks_db()
+def _rebuild_chunks(force=False):
+    """Rebuilds the chunks FTS5 index from all sources. Skips if no changes detected."""
+    from src.core.database import get_connection
+
+    # Check if rebuild is needed
+    if not force:
+        try:
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("SELECT COUNT(*) FROM chunks")
+            existing_count = c.fetchone()[0]
+            if existing_count > 0:
+                md_count = len([f for f in os.listdir(OUTPUT_DIR) if f.endswith(".md")])
+                trd_count = len([f for f in os.listdir(TRD_DIR) if f.endswith(".docx")]) if os.path.isdir(TRD_DIR) else 0
+                log_count = len([f for f in os.listdir(LOG_DIR) if f.endswith((".cap", ".txt"))]) if os.path.isdir(LOG_DIR) else 0
+                img_count = len([f for f in os.listdir(IMAGE_DIR) if not f.startswith(".")]) if os.path.isdir(IMAGE_DIR) else 0
+                total_sources = md_count + trd_count + log_count + img_count
+                c.execute("SELECT COUNT(DISTINCT filename) FROM chunks")
+                indexed_files = c.fetchone()[0]
+                conn.close()
+                if indexed_files >= total_sources:
+                    print(f"⏭️ Chunks up-to-date ({existing_count} chunks, {indexed_files} files), skipping rebuild")
+                    return existing_count
+            else:
+                conn.close()
+        except sqlite3.OperationalError:
+            pass  # Table doesn't exist yet, proceed with rebuild
+
+    # Drop and recreate in a single connection to avoid race conditions
+    conn = get_connection()
+    c = conn.cursor()
+    try:
+        c.execute("DROP TABLE IF EXISTS chunks")
+    except sqlite3.OperationalError:
+        pass
+    c.execute("""
+    CREATE VIRTUAL TABLE IF NOT EXISTS chunks USING fts5(
+        filename,
+        chunk_text,
+        model,
+        date_str,
+        source_type
+    )
+    """)
+    conn.commit()
+
     count = 0
+    batch = []
+    BATCH_SIZE = 200
+
+    def flush_batch():
+        nonlocal batch
+        if batch:
+            c.executemany("INSERT INTO chunks (filename, chunk_text, model, date_str, source_type) VALUES (?, ?, ?, ?, ?)", batch)
+            conn.commit()
+            batch = []
 
     # Index mail .md files
     for f in os.listdir(OUTPUT_DIR):
@@ -94,8 +157,10 @@ def _rebuild_chunks():
             content = file.read()
         result = extract_chunks(content, f)
         for chunk in result["chunks"]:
-            insert_chunk(f, chunk, result["model"], result["date_str"], "mail")
+            batch.append((f, chunk, result["model"], result["date_str"], "mail"))
             count += 1
+            if len(batch) >= BATCH_SIZE:
+                flush_batch()
 
     # Index TRD .docx files
     if os.path.isdir(TRD_DIR):
@@ -111,8 +176,10 @@ def _rebuild_chunks():
                 lines = [l for l in content.split("\n") if l.strip()]
                 for i in range(0, len(lines), 30):
                     chunk = "\n".join(lines[i:i+30])
-                    insert_chunk(f, chunk, model, date_str, "trd")
+                    batch.append((f, chunk, model, date_str, "trd"))
                     count += 1
+                    if len(batch) >= BATCH_SIZE:
+                        flush_batch()
             except Exception as e:
                 print(f"❌ TRD failed {f}: {e}")
 
@@ -130,17 +197,44 @@ def _rebuild_chunks():
                 lines = [l.strip() for l in content.split("\n") if l.strip()][:50]
                 chunk = "\n".join(lines)
                 if chunk:
-                    insert_chunk(f, chunk, model, date_str, "log")
+                    batch.append((f, chunk, model, date_str, "log"))
                     count += 1
+                    if len(batch) >= BATCH_SIZE:
+                        flush_batch()
             except Exception as e:
                 print(f"❌ Log failed {f}: {e}")
+
+    # Index FW image filenames (binary files, index name only)
+    if os.path.isdir(IMAGE_DIR):
+        for f in os.listdir(IMAGE_DIR):
+            if f.startswith("."):
+                continue
+            path = os.path.join(IMAGE_DIR, f)
+            if not os.path.isfile(path):
+                continue
+            model, version = extract_project_version(f)
+            date_str = _file_date(path)
+            # Use filename as chunk text (contains model + version info)
+            chunk_text = f"FW Image: {f}"
+            if version:
+                chunk_text += f"\nVersion: V{version}"
+            if model:
+                chunk_text += f"\nModel: {model}"
+            batch.append((f, chunk_text, model, date_str, "image"))
+            count += 1
+            if len(batch) >= BATCH_SIZE:
+                flush_batch()
 
     # Index notes from DB
     from src.core.database import init_notes_db, get_all_notes
     init_notes_db()
     for n in get_all_notes():
-        insert_chunk(f"note_{n['id']}.md", n["content"], "", n["created_at"][:10], "note")
+        batch.append((f"note_{n['id']}.md", n["content"], "", n["created_at"][:10], "note"))
         count += 1
+
+    # Final flush
+    flush_batch()
+    conn.close()
 
     return count
 

@@ -29,15 +29,29 @@ MAX_HISTORY = 5
 
 @app.on_event("startup")
 async def startup_sync():
-    """Run pipeline on startup and schedule hourly sync."""
-    run_pipeline()
+    """Run pipeline on startup in background and schedule hourly sync."""
+    import threading
+    def _run_pipeline_safe():
+        try:
+            run_pipeline()
+        except Exception as e:
+            print(f"❌ Pipeline startup error: {e}")
+    t = threading.Thread(target=_run_pipeline_safe, daemon=True)
+    t.start()
     asyncio.create_task(_hourly_sync())
 
 
 async def _hourly_sync():
     while True:
         await asyncio.sleep(3600)
-        run_pipeline()
+        import threading
+        def _run():
+            try:
+                run_pipeline()
+            except Exception as e:
+                print(f"❌ Pipeline hourly error: {e}")
+        t = threading.Thread(target=_run, daemon=True)
+        t.start()
 
 
 class QARequest(BaseModel):
@@ -56,6 +70,11 @@ def read_root():
     template_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates", "index.html")
     return FileResponse(template_path)
 
+@app.get("/favicon.ico")
+def favicon():
+    favicon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates", "favicon.ico")
+    return FileResponse(favicon_path, media_type="image/x-icon")
+
 
 @app.get("/api/models")
 def list_models():
@@ -70,7 +89,38 @@ def search(q: str = Query(..., min_length=1), model: Optional[str] = None, date_
 
 @app.post("/api/ask")
 def ask(req: QARequest):
+    # Detect source type hints in question
+    q_lower = req.question.lower()
+    source_hint = None
+    if any(kw in q_lower for kw in ["logfile", "log file", "產測", "cap", "test log"]):
+        source_hint = "log"
+    elif any(kw in q_lower for kw in ["trd", "測試需求"]):
+        source_hint = "trd"
+    elif any(kw in q_lower for kw in ["image", "firmware image", "binary", "fw image"]):
+        source_hint = "image"
+
+    # Search with mixed sources: general + source-specific
     results = search_chunks(req.question, model=req.model, date_from=req.date_from, limit=5)
+
+    if source_hint:
+        # Auto-detect model from question for typed search
+        import re as _re
+        from src.core.parser import _normalize_model
+        detected_model = req.model
+        if not detected_model:
+            # Use looser regex that works with CJK characters
+            m = _re.search(r'(EAP\d{3}[a-zA-Z]?|OAP\d{3}|ECS\d{4}[a-zA-Z]?|JWS\d{4}[A-Z]?|JioWave\d+|SW\d{4}[A-Z]?)', req.question, _re.IGNORECASE)
+            if m:
+                detected_model = _normalize_model(m.group(0))
+        # Also search specifically in the hinted source type
+        typed_results = search_chunks(req.question, model=detected_model, date_from=req.date_from, source_type=source_hint, limit=3)
+        # Merge: add typed results not already in general results
+        existing_filenames = {r["filename"] for r in results}
+        for r in typed_results:
+            if r["filename"] not in existing_filenames:
+                results.append(r)
+        # Cap at 8
+        results = results[:8]
 
     if not results:
         return {"answer": "❌ 資料中無相關記錄。", "sources": []}
@@ -116,6 +166,26 @@ def _fallback_answer(results, question):
     return "⚠️ Fallback Mode (No AI)\n\n" + "\n\n".join(sections)
 
 
+class AdoptRequest(BaseModel):
+    question: str
+    answer: str
+
+
+@app.post("/api/ask/adopt")
+def adopt_answer(req: AdoptRequest):
+    """採納 AI 回答：將 Q&A 存為 note，供未來搜尋使用。"""
+    from datetime import datetime
+    init_notes_db()
+    title = f"✅ 採納: {req.question[:40]}"
+    content = f"## 問題\n{req.question}\n\n## 回答\n{req.answer}"
+    note = insert_note(title, content)
+    # 即時寫入 chunks
+    from src.core.database import init_chunks_db, insert_chunk
+    init_chunks_db()
+    insert_chunk(f"note_{note['id']}.md", content, "", note["created_at"][:10], "note")
+    return {"status": "adopted", "note_id": note["id"]}
+
+
 @app.get("/api/fw/summary")
 def get_fw_summary():
     return FWService.get_fw_summary()
@@ -131,8 +201,23 @@ def generate_report():
 
 @app.get("/api/pipeline/sync")
 def sync_data():
-    count = run_pipeline()
-    return {"status": "success", "processed_files": count}
+    result = run_pipeline()
+    if result["failed"] and result["processed"] == 0 and result["found"] > 0:
+        status = "failed"
+    elif result["failed"]:
+        status = "partial"
+    elif result["found"] == 0:
+        status = "no_new_files"
+    else:
+        status = "success"
+    return {
+        "status": status,
+        "found": result["found"],
+        "processed": result["processed"],
+        "failed": result["failed"],
+        "indexed": result["indexed"],
+        "chunks": result["chunks"],
+    }
 
 
 NOTES_DIR = os.path.join(PROJECT_ROOT, "knowledge", "notes")
@@ -201,6 +286,11 @@ def edit_note(note_id: int, title: str = Form(...), content: str = Form(...), fi
     safe_title = re.sub(r'[\\/:*?"<>|]', '_', title)[:40]
     with open(os.path.join(NOTES_DIR, f"{note_id}_{safe_title}.md"), "w", encoding="utf-8") as out:
         out.write(f"# {title}\n\n{full_content}\n")
+    # 同步 GUIDE.md（如果是 GUIDE 筆記）
+    if "GUIDE" in title:
+        guide_path = os.path.join(PROJECT_ROOT, "knowledge", "GUIDE.md")
+        with open(guide_path, "w", encoding="utf-8") as out:
+            out.write(full_content)
     # 更新 chunks
     from src.core.database import get_connection, insert_chunk, init_chunks_db
     conn = get_connection()
@@ -219,6 +309,12 @@ def edit_note(note_id: int, title: str = Form(...), content: str = Form(...), fi
 @app.delete("/api/notes/{note_id}")
 def remove_note(note_id: int):
     init_notes_db()
+    # 檢查是否為 GUIDE 筆記（不可刪除）
+    from src.core.database import get_all_notes
+    notes = get_all_notes()
+    for n in notes:
+        if n["id"] == note_id and "GUIDE" in n["title"]:
+            raise HTTPException(status_code=403, detail="GUIDE 筆記不可刪除")
     # 刪除對應 .md
     import glob
     for f in glob.glob(os.path.join(NOTES_DIR, f"{note_id}_*")):
@@ -249,4 +345,4 @@ def download_file(filename: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8010)
+    uvicorn.run(app, host="0.0.0.0", port=8010, timeout_graceful_shutdown=3)

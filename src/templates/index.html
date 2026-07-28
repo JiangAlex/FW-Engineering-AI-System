@@ -13,10 +13,10 @@
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
     <nav class="bg-blue-600 p-4 text-white shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">🚀 FW AI Dashboard</h1>
+            <h1 class="text-2xl font-bold">🚀 Engineering Department</h1>
             <div class="space-x-2">
-                <button onclick="syncData()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">同步資料</button>
-                <button onclick="generateReport()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition">生成週報</button>
+                <button onclick="syncData()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">同步</button>
+                <button onclick="generateReport()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition">週報</button>
             </div>
         </div>
     </nav>
@@ -117,6 +117,27 @@
                 const data = await res.json();
                 answerDiv.innerText = data.answer;
 
+                // Show adopt button if answer is valid
+                if (data.answer && !data.answer.startsWith('❌')) {
+                    const adoptBtn = document.createElement('button');
+                    adoptBtn.className = 'mt-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded';
+                    adoptBtn.innerText = '⭐ 採納此回答';
+                    adoptBtn.onclick = async () => {
+                        const res = await fetch('/api/ask/adopt', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ question, answer: data.answer })
+                        });
+                        if (res.ok) {
+                            adoptBtn.innerText = '✅ 已採納';
+                            adoptBtn.disabled = true;
+                            adoptBtn.className = 'mt-2 bg-gray-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed';
+                            loadNotes();
+                        }
+                    };
+                    answerDiv.appendChild(adoptBtn);
+                }
+
                 // Render sources as expandable accordion
                 if (data.sources && data.sources.length) {
                     const typeLabel = {mail:'📧', trd:'📋TRD', log:'🔧Log', note:'📝Note'};
@@ -204,7 +225,7 @@
                             <div><span class="font-bold">${n.title}</span><span class="text-gray-400 text-xs ml-2">${n.created_at}</span></div>
                             <div class="flex space-x-1 items-center">
                                 <button data-id="${n.id}" data-title="${encodeURIComponent(n.title)}" data-content="${encodeURIComponent(displayContent)}" onclick="event.stopPropagation();editNote(this)" class="text-blue-500 hover:text-blue-700 text-xs">編輯</button>
-                                <button onclick="event.stopPropagation();deleteNote(${n.id})" class="text-red-500 hover:text-red-700 text-xs">刪除</button>
+                                ${n.title.includes('GUIDE') ? '' : `<button onclick="event.stopPropagation();deleteNote(${n.id})" class="text-red-500 hover:text-red-700 text-xs">刪除</button>`}
                                 <span class="text-gray-400 text-xs ml-1">▼</span>
                             </div>
                         </div>
