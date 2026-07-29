@@ -8,6 +8,36 @@
     <style>
         .source-content { display: none; }
         .source-content.open { display: block; }
+        #ai-assistant {
+            position: fixed;
+            top: 50%;
+            left: 50px;
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.2s;
+            pointer-events: auto;
+        }
+        #ai-assistant:hover { transform: scale(1.1); }
+        #ai-assistant img { width: 100px; height: 100px; }
+        #ai-bubble {
+            position: fixed;
+            top: 50%;
+            left: 50px;
+            z-index: 1001;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 10px 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 14px;
+            display: none;
+            animation: bubble-in 0.3s ease;
+            white-space: nowrap;
+        }
+        @keyframes bubble-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
@@ -23,28 +53,10 @@
 
     <div class="container mx-auto p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- AI QA Section -->
-            <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
-                <h2 class="text-xl font-bold mb-4 border-b pb-2">🤖 AI QA</h2>
-                <div class="flex space-x-2 mb-3">
-                    <input type="text" id="qa-input" class="flex-1 border p-2 rounded" placeholder="詢問工程問題..." onkeydown="if(event.key==='Enter')askAI()">
-                    <button onclick="askAI()" class="bg-blue-600 text-white px-4 py-2 rounded">發送</button>
-                    <button onclick="clearQA()" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">重新</button>
-                </div>
-                <!-- Filters (next to results) -->
-                <div class="flex space-x-2 mb-3 text-sm">
-                    <select id="filter-model" class="border p-1 rounded">
-                        <option value="">全部型號</option>
-                    </select>
-                    <select id="filter-time" class="border p-1 rounded">
-                        <option value="">全部時間</option>
-                        <option value="7">近一週</option>
-                        <option value="30">近一月</option>
-                        <option value="90">近三月</option>
-                    </select>
-                </div>
-                <div id="qa-answer" class="bg-gray-50 p-4 rounded min-h-[100px] text-sm whitespace-pre-wrap">答案將顯示於此...</div>
-                <!-- Sources -->
+            <!-- AI Answer Section -->
+            <div id="qa-answer-section" class="bg-white p-6 rounded-lg shadow md:col-span-2" style="display:none;">
+                <h2 class="text-xl font-bold mb-4 border-b pb-2">🤖 AI 回答</h2>
+                <div id="qa-answer" class="bg-gray-50 p-4 rounded min-h-[100px] text-sm whitespace-pre-wrap"></div>
                 <div id="qa-sources" class="mt-3 space-y-1"></div>
             </div>
 
@@ -66,97 +78,6 @@
     </div>
 
     <script>
-        // Load models for filter dropdown
-        async function loadModels() {
-            try {
-                const res = await fetch('/api/models');
-                const data = await res.json();
-                const sel = document.getElementById('filter-model');
-                data.models.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m; opt.textContent = m;
-                    sel.appendChild(opt);
-                });
-            } catch(e) { console.error(e); }
-        }
-
-        function getDateFrom() {
-            const days = document.getElementById('filter-time').value;
-            if (!days) return null;
-            const d = new Date();
-            d.setDate(d.getDate() - parseInt(days));
-            return d.toISOString().slice(0, 10);
-        }
-
-        function clearQA() {
-            document.getElementById('qa-input').value = '';
-            document.getElementById('qa-answer').innerText = '答案將顯示於此...';
-            document.getElementById('qa-sources').innerHTML = '';
-        }
-
-        async function askAI() {
-            const question = document.getElementById('qa-input').value;
-            if (!question) return;
-            const answerDiv = document.getElementById('qa-answer');
-            const sourcesDiv = document.getElementById('qa-sources');
-            answerDiv.innerText = "思考中...";
-            sourcesDiv.innerHTML = "";
-
-            const body = { question };
-            const model = document.getElementById('filter-model').value;
-            const dateFrom = getDateFrom();
-            if (model) body.model = model;
-            if (dateFrom) body.date_from = dateFrom;
-
-            try {
-                const res = await fetch('/api/ask', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body)
-                });
-                const data = await res.json();
-                answerDiv.innerText = data.answer;
-
-                // Show adopt button if answer is valid
-                if (data.answer && !data.answer.startsWith('❌')) {
-                    const adoptBtn = document.createElement('button');
-                    adoptBtn.className = 'mt-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded';
-                    adoptBtn.innerText = '⭐ 採納此回答';
-                    adoptBtn.onclick = async () => {
-                        const res = await fetch('/api/ask/adopt', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ question, answer: data.answer })
-                        });
-                        if (res.ok) {
-                            adoptBtn.innerText = '✅ 已採納';
-                            adoptBtn.disabled = true;
-                            adoptBtn.className = 'mt-2 bg-gray-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed';
-                            loadNotes();
-                        }
-                    };
-                    answerDiv.appendChild(adoptBtn);
-                }
-
-                // Render sources as expandable accordion
-                if (data.sources && data.sources.length) {
-                    const typeLabel = {mail:'📧', trd:'📋TRD', log:'🔧Log', note:'📝Note'};
-                    sourcesDiv.innerHTML = '<p class="text-xs text-gray-500 font-bold mt-2">📎 來源 (點擊展開)</p>' +
-                        data.sources.map((s, i) => `
-                            <div class="border rounded text-xs">
-                                <div class="p-2 bg-gray-100 cursor-pointer hover:bg-gray-200 flex justify-between" onclick="this.nextElementSibling.classList.toggle('open')">
-                                    <span class="font-medium">${typeLabel[s.source_type]||'📧'} ${s.filename}</span>
-                                    <span class="text-gray-400">${s.date_str || ''}</span>
-                                </div>
-                                <div class="source-content p-2 text-gray-600 bg-white">${s.snippet}</div>
-                            </div>
-                        `).join('');
-                }
-            } catch (e) { answerDiv.innerText = "發生錯誤"; }
-        }
-
-        async function fetchFWData() {
-        }
 
         async function generateReport() {
             const btn = event.target;
@@ -164,35 +85,15 @@
             try {
                 const res = await fetch('/api/report/generate');
                 const data = await res.json();
-                // Show report in qa-answer area
-                const answerDiv = document.getElementById('qa-answer');
-                answerDiv.innerText = data.report || "生成失敗";
                 // Auto-save to notes
                 const fd = new FormData();
                 fd.append('title', data.filename.replace('.md',''));
                 fd.append('content', data.report);
                 await fetch('/api/notes', { method:'POST', body: fd });
                 loadNotes();
-                // Show download link + confirmation
-                const sourcesDiv = document.getElementById('qa-sources');
-                sourcesDiv.innerHTML = `
-                    <div class="flex items-center space-x-3 mt-2">
-                        <a href="/api/download/${data.filename}" target="_blank" class="text-blue-500 underline text-sm">📥 下載週報: ${data.filename}</a>
-                        <span class="text-green-600 text-sm">✅ 已自動存入筆記</span>
-                    </div>`;
+                alert("✅ 週報已生成並存入筆記！\n" + data.filename);
             } catch (e) { alert("生成失敗: " + e.message); }
             finally { btn.disabled = false; btn.innerText = "生成週報"; }
-        }
-
-        async function saveReportToNote(filename) {
-            // kept for backward compatibility
-            if (!window._lastReport) return;
-            const fd = new FormData();
-            fd.append('title', window._lastReport.title);
-            fd.append('content', window._lastReport.content);
-            await fetch('/api/notes', { method:'POST', body: fd });
-            alert('已存入筆記！');
-            loadNotes();
         }
 
         async function syncData() {
@@ -208,12 +109,18 @@
             finally { btn.disabled = false; btn.innerText = "同步資料"; }
         }
 
-        window.onload = () => { loadModels(); fetchFWData(); loadNotes(); };
+        window.onload = () => { loadNotes(); };
 
         async function loadNotes() {
             try {
                 const res = await fetch('/api/notes');
                 const data = await res.json();
+                // GUIDE always first
+                data.notes.sort((a, b) => {
+                    if (a.title.includes('GUIDE')) return -1;
+                    if (b.title.includes('GUIDE')) return 1;
+                    return 0;
+                });
                 const div = document.getElementById('notes-list');
                 div.innerHTML = data.notes.map(n => {
                     const attachMatch = n.content.match(/附件: (.+)$/m);
@@ -294,6 +201,193 @@
                 loadNotes();
             };
         }
+    </script>
+
+    <!-- AI Assistant Walking Character -->
+    <div id="ai-bubble">👋 想詢問什麼問題呢？</div>
+    <div id="ai-chat-bubble" style="display:none; position:fixed; z-index:1002; background:white; border:1px solid #e5e7eb; border-radius:12px; padding:14px; box-shadow:0 4px 16px rgba(0,0,0,0.2); width:320px;">
+        <p style="margin:0 0 8px 0; font-size:14px; font-weight:bold;">💬 想詢問什麼問題呢？</p>
+        <textarea id="bubble-input" rows="3" style="width:100%; border:1px solid #ddd; border-radius:8px; padding:8px; font-size:13px; resize:vertical;" placeholder="輸入問題..."></textarea>
+        <div style="margin-top:8px; display:flex; justify-content:flex-end; gap:6px;">
+            <button onclick="closeChatBubble()" style="padding:4px 12px; border-radius:6px; border:1px solid #ddd; font-size:12px; cursor:pointer;">取消</button>
+            <button onclick="sendBubbleQuestion()" style="padding:4px 12px; border-radius:6px; background:#2563eb; color:white; border:none; font-size:12px; cursor:pointer;">發送</button>
+        </div>
+    </div>
+    <div id="ai-assistant" onclick="assistantClick()">
+        <img src="/static/assistant_down.gif" alt="AI Assistant">
+    </div>
+    <script>
+        // Walking assistant logic - random roaming with directional GIFs
+        (function() {
+            const assistant = document.getElementById('ai-assistant');
+            const bubble = document.getElementById('ai-bubble');
+            const img = assistant.querySelector('img');
+            let posX = Math.random() * (window.innerWidth - 120);
+            let posY = Math.random() * (window.innerHeight - 150);
+            let targetX = posX;
+            let targetY = posY;
+            let walking = true;
+            let chatOpen = false;
+            let bubbleTimeout;
+            let currentDir = 'down';
+            const speed = 2;
+
+            const dirGifs = {
+                up: '/static/assistant_up.gif',
+                down: '/static/assistant_down.gif',
+                left: '/static/assistant_left.gif',
+                right: '/static/assistant_right.gif'
+            };
+
+            function setDirection(dx, dy) {
+                let dir;
+                if (Math.abs(dx) >= Math.abs(dy)) {
+                    dir = dx < 0 ? 'left' : 'right';
+                } else {
+                    dir = dy < 0 ? 'up' : 'down';
+                }
+                if (dir !== currentDir) {
+                    currentDir = dir;
+                    img.src = dirGifs[dir];
+                }
+                img.style.transform = '';
+            }
+
+            function pickNewTarget() {
+                targetX = 30 + Math.random() * (window.innerWidth - 160);
+                targetY = 30 + Math.random() * (window.innerHeight - 180);
+            }
+
+            function walk() {
+                if (!walking) { requestAnimationFrame(walk); return; }
+                const dx = targetX - posX;
+                const dy = targetY - posY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 5) {
+                    walking = false;
+                    setTimeout(function() { pickNewTarget(); walking = true; }, 500 + Math.random() * 1500);
+                } else {
+                    posX += (dx / dist) * speed;
+                    posY += (dy / dist) * speed;
+                    setDirection(dx, dy);
+                }
+                assistant.style.left = posX + 'px';
+                assistant.style.bottom = 'auto';
+                assistant.style.top = posY + 'px';
+                bubble.style.left = (posX + 10) + 'px';
+                bubble.style.top = (posY - 40) + 'px';
+                bubble.style.bottom = 'auto';
+                requestAnimationFrame(walk);
+            }
+
+            function randomPause() {
+                const interval = 6000 + Math.random() * 12000;
+                setTimeout(function() {
+                    if (chatOpen) { randomPause(); return; }
+                    walking = false;
+                    img.src = '/static/assistant.png';
+                    showBubble();
+                    setTimeout(function() { if (!chatOpen) { img.src = dirGifs[currentDir]; pickNewTarget(); walking = true; } }, 3000);
+                    randomPause();
+                }, interval);
+            }
+
+            function showBubble() {
+                bubble.style.display = 'block';
+                clearTimeout(bubbleTimeout);
+                bubbleTimeout = setTimeout(function() { bubble.style.display = 'none'; }, 3000);
+            }
+
+            window._assistantState = {
+                getPos: function() { return {x: posX, y: posY}; },
+                stop: function() { walking = false; chatOpen = true; },
+                resume: function() { chatOpen = false; img.src = dirGifs[currentDir]; walking = true; pickNewTarget(); }
+            };
+
+            pickNewTarget();
+            requestAnimationFrame(walk);
+            randomPause();
+            setTimeout(showBubble, 2000);
+        })();
+
+        function assistantClick() {
+            const pos = window._assistantState.getPos();
+            window._assistantState.stop();
+            document.getElementById('ai-bubble').style.display = 'none';
+            document.querySelector('#ai-assistant img').src = '/static/assistant.png';
+
+            const chatBubble = document.getElementById('ai-chat-bubble');
+            let left = pos.x - 100;
+            let top = pos.y - 280;
+            if (left < 10) left = 10;
+            if (left > window.innerWidth - 340) left = window.innerWidth - 340;
+            if (top < 10) top = pos.y + 110;
+            chatBubble.style.left = left + 'px';
+            chatBubble.style.top = top + 'px';
+            chatBubble.style.display = 'block';
+            document.getElementById('bubble-answer').innerText = '';
+            document.getElementById('bubble-input').value = '';
+            document.getElementById('bubble-input').focus();
+        }
+
+        function closeChatBubble() {
+            document.getElementById('ai-chat-bubble').style.display = 'none';
+            window._assistantState.resume();
+        }
+
+        async function sendBubbleQuestion() {
+            const input = document.getElementById('bubble-input');
+            const question = input.value.trim();
+            if (!question) return;
+
+            // Close bubble, resume walking
+            document.getElementById('ai-chat-bubble').style.display = 'none';
+            window._assistantState.resume();
+
+            // Show answer section
+            const section = document.getElementById('qa-answer-section');
+            const answerDiv = document.getElementById('qa-answer');
+            const sourcesDiv = document.getElementById('qa-sources');
+            section.style.display = 'block';
+            answerDiv.innerText = '思考中...';
+            sourcesDiv.innerHTML = '';
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            try {
+                const res = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ question: question })
+                });
+                const data = await res.json();
+                answerDiv.innerText = data.answer;
+
+                // Adopt button
+                if (data.answer && !data.answer.startsWith('❌')) {
+                    const adoptBtn = document.createElement('button');
+                    adoptBtn.className = 'mt-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded';
+                    adoptBtn.innerText = '⭐ 採納此回答';
+                    adoptBtn.onclick = async () => {
+                        const r = await fetch('/api/ask/adopt', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({question:question, answer:data.answer}) });
+                        if (r.ok) { adoptBtn.innerText = '✅ 已採納'; adoptBtn.disabled = true; adoptBtn.className = 'mt-2 bg-gray-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed'; loadNotes(); }
+                    };
+                    answerDiv.appendChild(adoptBtn);
+                }
+
+                // Sources
+                if (data.sources && data.sources.length) {
+                    const typeLabel = {mail:'📧', trd:'📋TRD', log:'🔧Log', note:'📝Note', image:'💾Image'};
+                    sourcesDiv.innerHTML = '<p class="text-xs text-gray-500 font-bold mt-2">📎 來源</p>' +
+                        data.sources.map(s => '<div class="text-xs text-gray-500">' + (typeLabel[s.source_type]||'📧') + ' ' + s.filename + ' (' + (s.date_str||'') + ')</div>').join('');
+                }
+            } catch(e) { answerDiv.innerText = '發生錯誤'; }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('bubble-input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBubbleQuestion(); }
+            });
+        });
     </script>
 </body>
 </html>

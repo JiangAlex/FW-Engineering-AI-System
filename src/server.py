@@ -225,6 +225,9 @@ ATTACHMENTS_DIR = os.path.join(PROJECT_ROOT, "knowledge", "notes", "attachments"
 os.makedirs(ATTACHMENTS_DIR, exist_ok=True)
 app.mount("/attachments", StaticFiles(directory=ATTACHMENTS_DIR), name="attachments")
 
+TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
+app.mount("/static", StaticFiles(directory=TEMPLATES_DIR), name="static")
+
 
 @app.get("/api/notes")
 def list_notes():
