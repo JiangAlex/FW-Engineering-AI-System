@@ -89,6 +89,11 @@ def search(q: str = Query(..., min_length=1), model: Optional[str] = None, date_
 
 @app.post("/api/ask")
 def ask(req: QARequest):
+    # Handle system meta questions (asking about database status, not knowledge content)
+    meta_answer = _handle_meta_question(req.question)
+    if meta_answer:
+        return {"answer": meta_answer, "sources": []}
+
     # Detect source type hints in question
     q_lower = req.question.lower()
     source_hint = None
@@ -99,8 +104,25 @@ def ask(req: QARequest):
     elif any(kw in q_lower for kw in ["image", "firmware image", "binary", "fw image"]):
         source_hint = "image"
 
-    # Search with mixed sources: general + source-specific
-    results = search_chunks(req.question, model=req.model, date_from=req.date_from, limit=5)
+    # Search with mixed sources: general search + ensure multi-source coverage
+    results = search_chunks(req.question, model=req.model, date_from=req.date_from, limit=15)
+
+    # Ensure results include diverse source types (log, trd, etc.)
+    # If general search is dominated by one source_type, supplement from others
+    existing_sources = {r.get("source_type", "mail") for r in results}
+    existing_filenames = {r["filename"] for r in results}
+    supplement_results = []
+    supplement_types = ["log", "trd", "report"]
+    if source_hint and source_hint not in supplement_types:
+        supplement_types.append(source_hint)
+
+    for stype in supplement_types:
+        if stype not in existing_sources:
+            extra = search_chunks(req.question, model=req.model, date_from=req.date_from, source_type=stype, limit=3)
+            for r in extra:
+                if r["filename"] not in existing_filenames:
+                    supplement_results.append(r)
+                    existing_filenames.add(r["filename"])
 
     if source_hint:
         # Auto-detect model from question for typed search
@@ -108,19 +130,21 @@ def ask(req: QARequest):
         from src.core.parser import _normalize_model
         detected_model = req.model
         if not detected_model:
-            # Use looser regex that works with CJK characters
             m = _re.search(r'(EAP\d{3}[a-zA-Z]?|OAP\d{3}|ECS\d{4}[a-zA-Z]?|JWS\d{4}[A-Z]?|JioWave\d+|SW\d{4}[A-Z]?)', req.question, _re.IGNORECASE)
             if m:
                 detected_model = _normalize_model(m.group(0))
-        # Also search specifically in the hinted source type
+        # Also search specifically in the hinted source type with detected model
         typed_results = search_chunks(req.question, model=detected_model, date_from=req.date_from, source_type=source_hint, limit=3)
-        # Merge: add typed results not already in general results
-        existing_filenames = {r["filename"] for r in results}
         for r in typed_results:
             if r["filename"] not in existing_filenames:
-                results.append(r)
-        # Cap at 8
-        results = results[:8]
+                supplement_results.append(r)
+                existing_filenames.add(r["filename"])
+
+    # Merge: supplement results get priority slots, then fill with general results
+    # Reserve up to 5 slots for supplement, rest for general
+    max_supplement = min(len(supplement_results), 5)
+    max_general = 15 - max_supplement
+    results = results[:max_general] + supplement_results[:max_supplement]
 
     if not results:
         return {"answer": "❌ 資料中無相關記錄。", "sources": []}
@@ -128,7 +152,7 @@ def ask(req: QARequest):
     sources = [{"filename": r["filename"], "snippet": r["snippet"], "date_str": r["date_str"], "source_type": r.get("source_type", "mail")} for r in results]
     chunks_text = "\n\n---\n".join([f"[{r['filename']}]\n{r['chunk_text']}" for r in results])
 
-    prompt = f"""你是一位工程知識助理，請嚴格根據以下 mail 記錄回答問題。若資料中找不到答案，請回答「資料中無相關記錄」。
+    prompt = f"""你是一位工程知識助理，請嚴格根據以下資料（可能包含 mail、產測 Log、TRD 測試需求、週報、筆記等來源）回答問題。若資料中找不到答案，請回答「資料中無相關記錄」。
 
 【資料】
 {chunks_text}
@@ -136,7 +160,7 @@ def ask(req: QARequest):
 【問題】
 {req.question}
 
-要求：繁體中文回答，條列重點，最後一句總結。"""
+要求：繁體中文回答，條列重點，標註資料來源類型，最後一句總結。"""
 
     answer = ai_client.ask(prompt, history=conversation_history)
     if answer.startswith("⚠️") or answer.startswith("❌"):
@@ -164,6 +188,63 @@ def _fallback_answer(results, question):
     if not sections:
         sections = [f"📎 {r['filename']} ({r['date_str']})\n  • {r['snippet']}" for r in results[:3]]
     return "⚠️ Fallback Mode (No AI)\n\n" + "\n\n".join(sections)
+
+
+def _handle_meta_question(question):
+    """Handle questions about system/database status (not knowledge content)."""
+    q = question.lower()
+    meta_keywords = ["載入", "匯入", "索引", "收錄", "資料庫", "目前有", "有多少", "幾筆", "日期範圍", "最新", "最早"]
+    date_keywords = ["日期", "什麼時候", "到幾號", "到何時", "時間範圍"]
+    count_keywords = ["幾筆", "多少", "幾封", "幾份", "數量", "統計"]
+
+    is_meta = any(kw in q for kw in meta_keywords)
+    is_date_q = any(kw in q for kw in date_keywords)
+    is_count_q = any(kw in q for kw in count_keywords)
+
+    if not is_meta and not is_date_q and not is_count_q:
+        return None
+
+    # Query database stats
+    from src.core.database import get_connection
+    conn = get_connection()
+    c = conn.cursor()
+
+    stats = {}
+    try:
+        c.execute("""
+            SELECT source_type, COUNT(*) as cnt,
+                   COUNT(DISTINCT filename) as files,
+                   MIN(date_str) as min_date,
+                   MAX(date_str) as max_date
+            FROM chunks
+            WHERE date_str != ''
+            GROUP BY source_type
+        """)
+        for row in c.fetchall():
+            stats[row[0]] = {"chunks": row[1], "files": row[2], "min_date": row[3], "max_date": row[4]}
+    except Exception:
+        conn.close()
+        return None
+    conn.close()
+
+    if not stats:
+        return None
+
+    # Build answer
+    lines = ["📊 **知識庫索引狀態**\n"]
+    source_labels = {"mail": "📧 Mail", "log": "🔧 產測 Log", "trd": "📋 TRD", "note": "📝 筆記", "image": "💾 FW Image", "report": "📊 週報"}
+    total_chunks = 0
+    total_files = 0
+    for src in ["mail", "log", "trd", "report", "note", "image"]:
+        if src in stats:
+            s = stats[src]
+            label = source_labels.get(src, src)
+            lines.append(f"- {label}：{s['files']} 個檔案 / {s['chunks']} 筆 chunks，日期範圍 {s['min_date']} ~ {s['max_date']}")
+            total_chunks += s["chunks"]
+            total_files += s["files"]
+
+    lines.append(f"\n**總計**：{total_files} 個檔案 / {total_chunks} 筆 chunks")
+    return "\n".join(lines)
 
 
 class AdoptRequest(BaseModel):

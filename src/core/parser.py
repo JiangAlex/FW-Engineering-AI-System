@@ -42,11 +42,22 @@ def extract_chunks(md_content, filename=""):
     date_str = ""
     date_match = re.search(r"^- Date:\s*(.+)$", md_content, re.MULTILINE)
     if date_match:
+        raw_date = date_match.group(1).strip()
         try:
-            dt = email.utils.parsedate_to_datetime(date_match.group(1).strip())
+            # Try RFC 2822 format first (e.g. "Mon, 15 Jun 2026 07:19:57 +0000")
+            dt = email.utils.parsedate_to_datetime(raw_date)
             date_str = dt.strftime("%Y-%m-%d")
         except Exception:
-            pass
+            try:
+                # Fallback: ISO format (e.g. "2026-07-24 10:06:28+08:00")
+                from datetime import datetime
+                dt = datetime.fromisoformat(raw_date)
+                date_str = dt.strftime("%Y-%m-%d")
+            except Exception:
+                # Last resort: extract YYYY-MM-DD with regex
+                iso_match = re.match(r"(\d{4}-\d{2}-\d{2})", raw_date)
+                if iso_match:
+                    date_str = iso_match.group(1)
 
     # Extract Clean Content section (between ## ✅ Clean Content and next ## ✅ or EOF)
     clean_match = re.search(r"## ✅ Clean Content\s*\n(.*?)(?=\n## ✅|\Z)", md_content, re.DOTALL)

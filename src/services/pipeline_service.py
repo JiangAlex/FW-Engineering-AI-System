@@ -14,6 +14,7 @@ OUTPUT_DIR = os.path.join(PROJECT_ROOT, "knowledge/md")
 TRD_DIR = os.path.join(PROJECT_ROOT, "knowledge/TRD")
 LOG_DIR = os.path.join(PROJECT_ROOT, "knowledge/ProductLogFiles")
 IMAGE_DIR = os.path.join(PROJECT_ROOT, "knowledge/image")
+REPORT_DIR = os.path.join(PROJECT_ROOT, "knowledge/report")
 
 def run_pipeline(force_reindex=False):
     """Runs the full pipeline: MSG -> MD -> SQLite.
@@ -95,29 +96,25 @@ def _rebuild_chunks(force=False):
     """Rebuilds the chunks FTS5 index from all sources. Skips if no changes detected."""
     from src.core.database import get_connection
 
-    # Check if rebuild is needed
+    # Check if rebuild is needed by comparing source file fingerprint
     if not force:
         try:
-            conn = get_connection()
-            c = conn.cursor()
-            c.execute("SELECT COUNT(*) FROM chunks")
-            existing_count = c.fetchone()[0]
-            if existing_count > 0:
-                md_count = len([f for f in os.listdir(OUTPUT_DIR) if f.endswith(".md")])
-                trd_count = len([f for f in os.listdir(TRD_DIR) if f.endswith(".docx")]) if os.path.isdir(TRD_DIR) else 0
-                log_count = len([f for f in os.listdir(LOG_DIR) if f.endswith((".cap", ".txt"))]) if os.path.isdir(LOG_DIR) else 0
-                img_count = len([f for f in os.listdir(IMAGE_DIR) if not f.startswith(".")]) if os.path.isdir(IMAGE_DIR) else 0
-                total_sources = md_count + trd_count + log_count + img_count
-                c.execute("SELECT COUNT(DISTINCT filename) FROM chunks")
-                indexed_files = c.fetchone()[0]
-                conn.close()
-                if indexed_files >= total_sources:
-                    print(f"⏭️ Chunks up-to-date ({existing_count} chunks, {indexed_files} files), skipping rebuild")
-                    return existing_count
-            else:
-                conn.close()
-        except sqlite3.OperationalError:
-            pass  # Table doesn't exist yet, proceed with rebuild
+            current_fingerprint = _compute_source_fingerprint()
+            fingerprint_path = os.path.join(PROJECT_ROOT, "knowledge", ".chunks_fingerprint")
+            if os.path.exists(fingerprint_path):
+                with open(fingerprint_path, "r") as f:
+                    saved_fingerprint = f.read().strip()
+                if saved_fingerprint == current_fingerprint:
+                    conn = get_connection()
+                    c = conn.cursor()
+                    c.execute("SELECT COUNT(*) FROM chunks")
+                    existing_count = c.fetchone()[0]
+                    conn.close()
+                    if existing_count > 0:
+                        print(f"⏭️ Chunks up-to-date (fingerprint match, {existing_count} chunks), skipping rebuild")
+                        return existing_count
+        except (sqlite3.OperationalError, OSError):
+            pass  # Table doesn't exist or fingerprint file issue, proceed with rebuild
 
     # Drop and recreate in a single connection to avoid race conditions
     conn = get_connection()
@@ -225,6 +222,27 @@ def _rebuild_chunks(force=False):
             if len(batch) >= BATCH_SIZE:
                 flush_batch()
 
+    # Index weekly reports
+    if os.path.isdir(REPORT_DIR):
+        for f in os.listdir(REPORT_DIR):
+            if not f.endswith(".md"):
+                continue
+            path = os.path.join(REPORT_DIR, f)
+            try:
+                with open(path, "r", encoding="utf-8") as file:
+                    content = file.read()
+                date_str = _file_date(path)
+                # Split into chunks (30 lines each)
+                lines = [l for l in content.split("\n") if l.strip()]
+                for i in range(0, len(lines), 30):
+                    chunk = "\n".join(lines[i:i+30])
+                    batch.append((f, chunk, "", date_str, "report"))
+                    count += 1
+                    if len(batch) >= BATCH_SIZE:
+                        flush_batch()
+            except Exception as e:
+                print(f"❌ Report failed {f}: {e}")
+
     # Index notes from DB
     from src.core.database import init_notes_db, get_all_notes
     init_notes_db()
@@ -236,7 +254,69 @@ def _rebuild_chunks(force=False):
     flush_batch()
     conn.close()
 
+    # Save fingerprint so next run can skip rebuild if sources unchanged
+    try:
+        fingerprint_path = os.path.join(PROJECT_ROOT, "knowledge", ".chunks_fingerprint")
+        with open(fingerprint_path, "w") as f:
+            f.write(_compute_source_fingerprint())
+    except OSError:
+        pass
+
     return count
+
+
+def _compute_source_fingerprint():
+    """Computes a hash of all source filenames + modification times.
+    Any file added, removed, or modified will change the fingerprint."""
+    import hashlib
+    entries = []
+
+    # MD files
+    if os.path.isdir(OUTPUT_DIR):
+        for f in sorted(os.listdir(OUTPUT_DIR)):
+            if f.endswith(".md"):
+                path = os.path.join(OUTPUT_DIR, f)
+                entries.append(f"{f}:{os.path.getmtime(path):.0f}")
+
+    # TRD files
+    if os.path.isdir(TRD_DIR):
+        for f in sorted(os.listdir(TRD_DIR)):
+            if f.endswith(".docx"):
+                path = os.path.join(TRD_DIR, f)
+                entries.append(f"{f}:{os.path.getmtime(path):.0f}")
+
+    # Log files
+    if os.path.isdir(LOG_DIR):
+        for f in sorted(os.listdir(LOG_DIR)):
+            if f.endswith((".cap", ".txt")):
+                path = os.path.join(LOG_DIR, f)
+                entries.append(f"{f}:{os.path.getmtime(path):.0f}")
+
+    # Image files
+    if os.path.isdir(IMAGE_DIR):
+        for f in sorted(os.listdir(IMAGE_DIR)):
+            if not f.startswith(".") and os.path.isfile(os.path.join(IMAGE_DIR, f)):
+                path = os.path.join(IMAGE_DIR, f)
+                entries.append(f"{f}:{os.path.getmtime(path):.0f}")
+
+    # Report files
+    if os.path.isdir(REPORT_DIR):
+        for f in sorted(os.listdir(REPORT_DIR)):
+            if f.endswith(".md"):
+                path = os.path.join(REPORT_DIR, f)
+                entries.append(f"{f}:{os.path.getmtime(path):.0f}")
+
+    # Notes (use id + content hash)
+    try:
+        from src.core.database import init_notes_db, get_all_notes
+        init_notes_db()
+        for n in get_all_notes():
+            entries.append(f"note_{n['id']}:{n['created_at']}")
+    except Exception:
+        pass
+
+    fingerprint_str = "\n".join(entries)
+    return hashlib.sha256(fingerprint_str.encode()).hexdigest()
 
 
 def _file_date(path):
