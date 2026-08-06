@@ -35,3 +35,5 @@ knowledge/notes/attachments/*
 # OS
 .DS_Store
 Thumbs.db
+docs/
+memory.md
