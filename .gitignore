@@ -13,6 +13,9 @@ knowledge/index.db
 knowledge/.chunks_fingerprint
 knowledge/.embeddings_fingerprint
 
+# LLM models (too large for git, download separately)
+models/
+
 # Raw input (processed and deleted by pipeline)
 knowledge/raw_msg/*.msg
 

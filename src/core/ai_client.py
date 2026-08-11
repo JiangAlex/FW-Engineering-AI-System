@@ -5,6 +5,28 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# LLM Backend configuration
+LLM_BACKEND = os.getenv("LLM_BACKEND", "local")  # "local" or "minimax"
+
+
+def get_ai_client():
+    """Factory function: returns the appropriate AI client based on LLM_BACKEND.
+    
+    - "local": Uses LocalAIClient (Qwen2.5-7B, 100% on-premise)
+    - "minimax": Uses AIClient (MiniMax API, requires API key)
+    
+    Falls back to MiniMax if local model fails to load.
+    """
+    if LLM_BACKEND == "local":
+        from src.core.local_llm import LocalAIClient
+        client = LocalAIClient.get_instance()
+        if client and client.is_ready:
+            return client
+        print("⚠️ Local LLM unavailable, falling back to MiniMax API")
+    
+    return AIClient()
+
+
 def sanitize(text):
     """Remove sensitive info (emails, phones, names, internal IDs) before sending to external API."""
     # Remove email addresses

@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 from src.core.database import search_docs, search_chunks, get_all_models, init_notes_db, insert_note, get_all_notes, delete_note, update_note
-from src.core.ai_client import AIClient
+from src.core.ai_client import AIClient, get_ai_client
 from src.core.retriever import HybridRetriever
 from src.services.fw_service import FWService
 from src.services.report_service import ReportService
@@ -23,7 +23,7 @@ from src.services.pipeline_service import run_pipeline
 import asyncio
 
 app = FastAPI(title="FW Engineering AI System API")
-ai_client = AIClient()
+ai_client = get_ai_client()
 hybrid_retriever = HybridRetriever()
 conversation_history: list[dict] = []
 MAX_HISTORY = 5
