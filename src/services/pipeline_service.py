@@ -62,6 +62,10 @@ def run_pipeline(force_reindex=False):
     # Step 3: Rebuild chunk index for QA
     chunk_count = _rebuild_chunks(force=force_reindex or processed_count > 0)
     print(f"🔍 Built {chunk_count} chunks for QA search")
+
+    # Step 4: Rebuild embedding index for vector search
+    embedding_count = _rebuild_embeddings(force=force_reindex or processed_count > 0)
+    print(f"🧠 Built {embedding_count} embeddings for vector search")
     
     return {
         "found": len(files),
@@ -69,6 +73,7 @@ def run_pipeline(force_reindex=False):
         "failed": failed_files,
         "indexed": indexed,
         "chunks": chunk_count,
+        "embeddings": embedding_count,
     }
 
 
@@ -328,3 +333,122 @@ def _file_date(path):
 
 if __name__ == "__main__":
     run_pipeline(force_reindex=True)
+
+
+def _rebuild_embeddings(force=False):
+    """Builds vector embeddings for all chunks. Incremental by default.
+    
+    Reads chunks from the FTS5 chunks table (source of truth) and encodes them
+    into vectors stored in vec_chunks (sqlite-vec).
+    
+    Gracefully skips if embedding model is unavailable (disabled, download failed, etc.)
+    
+    Returns:
+        Number of embeddings in the index, or 0 if skipped.
+    """
+    from src.core.embedder import LocalEmbedder, EMBEDDING_ENABLED
+    from src.core.database import (
+        get_connection, init_vec_db, clear_vec_chunks,
+        insert_vec_chunks_batch, get_vec_chunk_count
+    )
+
+    if not EMBEDDING_ENABLED:
+        print("⏭️ Embedding disabled (EMBEDDING_ENABLED=false), skipping")
+        return 0
+
+    # Check fingerprint to decide if rebuild is needed
+    if not force:
+        try:
+            fingerprint_path = os.path.join(PROJECT_ROOT, "knowledge", ".embeddings_fingerprint")
+            chunks_fingerprint_path = os.path.join(PROJECT_ROOT, "knowledge", ".chunks_fingerprint")
+            if os.path.exists(fingerprint_path) and os.path.exists(chunks_fingerprint_path):
+                with open(fingerprint_path, "r") as f:
+                    saved_emb_fp = f.read().strip()
+                with open(chunks_fingerprint_path, "r") as f:
+                    current_chunks_fp = f.read().strip()
+                # If chunks haven't changed since last embedding build, skip
+                if saved_emb_fp == current_chunks_fp:
+                    existing = get_vec_chunk_count()
+                    if existing > 0:
+                        print(f"⏭️ Embeddings up-to-date ({existing} vectors), skipping")
+                        return existing
+        except (OSError, Exception):
+            pass
+
+    # Try to load embedder (may fail if model not downloaded yet)
+    embedder = LocalEmbedder.get_instance()
+    if embedder is None or not embedder.is_ready:
+        print("⚠️ Embedding model not available, skipping vector index build")
+        return 0
+
+    # Read all chunks from FTS5 table
+    conn = get_connection()
+    c = conn.cursor()
+    try:
+        c.execute("SELECT rowid, filename, chunk_text, model, date_str, source_type FROM chunks")
+        all_chunks = c.fetchall()
+    except sqlite3.OperationalError:
+        conn.close()
+        print("⚠️ Chunks table not found, skipping embedding build")
+        return 0
+    conn.close()
+
+    if not all_chunks:
+        print("⚠️ No chunks to embed")
+        return 0
+
+    print(f"🧠 Building embeddings for {len(all_chunks)} chunks...")
+
+    # Initialize vector tables
+    init_vec_db(dimension=embedder.dimension)
+
+    if force:
+        clear_vec_chunks()
+        init_vec_db(dimension=embedder.dimension)
+
+    # Batch encode all chunk texts
+    texts = [row[2] for row in all_chunks]  # chunk_text column
+    
+    try:
+        embeddings = embedder.encode(texts, show_progress=True)
+    except Exception as e:
+        print(f"❌ Embedding encode failed: {e}")
+        return 0
+
+    # Batch insert into vec_chunks + chunk_meta
+    BATCH_SIZE = 200
+    count = 0
+    for i in range(0, len(all_chunks), BATCH_SIZE):
+        batch_chunks = all_chunks[i:i + BATCH_SIZE]
+        batch_embeddings = embeddings[i:i + BATCH_SIZE]
+        
+        chunks_data = []
+        for row, emb in zip(batch_chunks, batch_embeddings):
+            rowid, filename, chunk_text, model, date_str, source_type = row
+            chunks_data.append({
+                "id": rowid,
+                "filename": filename,
+                "chunk_text": chunk_text,
+                "model": model or "",
+                "date_str": date_str or "",
+                "source_type": source_type or "mail",
+                "embedding": emb.tolist(),
+            })
+        
+        insert_vec_chunks_batch(chunks_data)
+        count += len(chunks_data)
+
+    # Save fingerprint (use chunks fingerprint as reference)
+    try:
+        chunks_fingerprint_path = os.path.join(PROJECT_ROOT, "knowledge", ".chunks_fingerprint")
+        embeddings_fingerprint_path = os.path.join(PROJECT_ROOT, "knowledge", ".embeddings_fingerprint")
+        if os.path.exists(chunks_fingerprint_path):
+            with open(chunks_fingerprint_path, "r") as f:
+                current_fp = f.read().strip()
+            with open(embeddings_fingerprint_path, "w") as f:
+                f.write(current_fp)
+    except OSError:
+        pass
+
+    print(f"✅ Built {count} embeddings (dim={embedder.dimension})")
+    return count

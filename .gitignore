@@ -11,6 +11,7 @@ __pycache__/
 # Database (auto-generated from pipeline)
 knowledge/index.db
 knowledge/.chunks_fingerprint
+knowledge/.embeddings_fingerprint
 
 # Raw input (processed and deleted by pipeline)
 knowledge/raw_msg/*.msg

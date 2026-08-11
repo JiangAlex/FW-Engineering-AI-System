@@ -15,6 +15,7 @@ from typing import Optional, List
 
 from src.core.database import search_docs, search_chunks, get_all_models, init_notes_db, insert_note, get_all_notes, delete_note, update_note
 from src.core.ai_client import AIClient
+from src.core.retriever import HybridRetriever
 from src.services.fw_service import FWService
 from src.services.report_service import ReportService
 from src.services.pipeline_service import run_pipeline
@@ -23,6 +24,7 @@ import asyncio
 
 app = FastAPI(title="FW Engineering AI System API")
 ai_client = AIClient()
+hybrid_retriever = HybridRetriever()
 conversation_history: list[dict] = []
 MAX_HISTORY = 5
 
@@ -58,6 +60,7 @@ class QARequest(BaseModel):
     question: str
     model: Optional[str] = None
     date_from: Optional[str] = None
+    use_embedding: Optional[bool] = True
 
 
 class NoteRequest(BaseModel):
@@ -104,47 +107,48 @@ def ask(req: QARequest):
     elif any(kw in q_lower for kw in ["image", "firmware image", "binary", "fw image"]):
         source_hint = "image"
 
-    # Search with mixed sources: general search + ensure multi-source coverage
-    results = search_chunks(req.question, model=req.model, date_from=req.date_from, limit=15)
+    # Use HybridRetriever (BM25 + Vector + RRF) or fallback to BM25-only
+    if req.use_embedding and hybrid_retriever.embedding_available:
+        results = hybrid_retriever.search_with_supplement(
+            req.question, model=req.model, date_from=req.date_from,
+            source_type=source_hint, limit=15
+        )
+    else:
+        # Fallback: original BM25-only search with multi-source supplement
+        results = search_chunks(req.question, model=req.model, date_from=req.date_from, limit=15)
 
-    # Ensure results include diverse source types (log, trd, etc.)
-    # If general search is dominated by one source_type, supplement from others
-    existing_sources = {r.get("source_type", "mail") for r in results}
-    existing_filenames = {r["filename"] for r in results}
-    supplement_results = []
-    supplement_types = ["log", "trd", "report"]
-    if source_hint and source_hint not in supplement_types:
-        supplement_types.append(source_hint)
+        existing_sources = {r.get("source_type", "mail") for r in results}
+        existing_filenames = {r["filename"] for r in results}
+        supplement_results = []
+        supplement_types = ["log", "trd", "report"]
+        if source_hint and source_hint not in supplement_types:
+            supplement_types.append(source_hint)
 
-    for stype in supplement_types:
-        if stype not in existing_sources:
-            extra = search_chunks(req.question, model=req.model, date_from=req.date_from, source_type=stype, limit=3)
-            for r in extra:
+        for stype in supplement_types:
+            if stype not in existing_sources:
+                extra = search_chunks(req.question, model=req.model, date_from=req.date_from, source_type=stype, limit=3)
+                for r in extra:
+                    if r["filename"] not in existing_filenames:
+                        supplement_results.append(r)
+                        existing_filenames.add(r["filename"])
+
+        if source_hint:
+            import re as _re
+            from src.core.parser import _normalize_model
+            detected_model = req.model
+            if not detected_model:
+                m = _re.search(r'(EAP\d{3}[a-zA-Z]?|OAP\d{3}|ECS\d{4}[a-zA-Z]?|JWS\d{4}[A-Z]?|JioWave\d+|SW\d{4}[A-Z]?)', req.question, _re.IGNORECASE)
+                if m:
+                    detected_model = _normalize_model(m.group(0))
+            typed_results = search_chunks(req.question, model=detected_model, date_from=req.date_from, source_type=source_hint, limit=3)
+            for r in typed_results:
                 if r["filename"] not in existing_filenames:
                     supplement_results.append(r)
                     existing_filenames.add(r["filename"])
 
-    if source_hint:
-        # Auto-detect model from question for typed search
-        import re as _re
-        from src.core.parser import _normalize_model
-        detected_model = req.model
-        if not detected_model:
-            m = _re.search(r'(EAP\d{3}[a-zA-Z]?|OAP\d{3}|ECS\d{4}[a-zA-Z]?|JWS\d{4}[A-Z]?|JioWave\d+|SW\d{4}[A-Z]?)', req.question, _re.IGNORECASE)
-            if m:
-                detected_model = _normalize_model(m.group(0))
-        # Also search specifically in the hinted source type with detected model
-        typed_results = search_chunks(req.question, model=detected_model, date_from=req.date_from, source_type=source_hint, limit=3)
-        for r in typed_results:
-            if r["filename"] not in existing_filenames:
-                supplement_results.append(r)
-                existing_filenames.add(r["filename"])
-
-    # Merge: supplement results get priority slots, then fill with general results
-    # Reserve up to 5 slots for supplement, rest for general
-    max_supplement = min(len(supplement_results), 5)
-    max_general = 15 - max_supplement
-    results = results[:max_general] + supplement_results[:max_supplement]
+        max_supplement = min(len(supplement_results), 5)
+        max_general = 15 - max_supplement
+        results = results[:max_general] + supplement_results[:max_supplement]
 
     if not results:
         return {"answer": "❌ 資料中無相關記錄。", "sources": []}
@@ -298,6 +302,7 @@ def sync_data():
         "failed": result["failed"],
         "indexed": result["indexed"],
         "chunks": result["chunks"],
+        "embeddings": result.get("embeddings", 0),
     }
 
 

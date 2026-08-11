@@ -214,3 +214,201 @@ def update_note(note_id, title, content):
     c.execute("UPDATE notes SET title = ?, content = ? WHERE id = ?", (title, content, note_id))
     conn.commit()
     conn.close()
+
+
+# --- Vector embedding tables (sqlite-vec) ---
+
+def get_vec_connection():
+    """Returns a connection with sqlite-vec extension loaded."""
+    import sqlite_vec
+    conn = sqlite3.connect(DB_PATH, timeout=60)
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.enable_load_extension(True)
+    sqlite_vec.load(conn)
+    conn.enable_load_extension(False)
+    return conn
+
+
+def init_vec_db(dimension=1024):
+    """Creates the vec_chunks virtual table and chunk_meta table."""
+    conn = get_vec_connection()
+    c = conn.cursor()
+    c.execute(f"""
+    CREATE VIRTUAL TABLE IF NOT EXISTS vec_chunks USING vec0(
+        embedding float[{dimension}]
+    )
+    """)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS chunk_meta (
+        id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL,
+        chunk_text TEXT NOT NULL,
+        model TEXT DEFAULT '',
+        date_str TEXT DEFAULT '',
+        source_type TEXT DEFAULT 'mail'
+    )
+    """)
+    c.execute("CREATE INDEX IF NOT EXISTS idx_chunk_meta_model ON chunk_meta(model)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_chunk_meta_source ON chunk_meta(source_type)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_chunk_meta_date ON chunk_meta(date_str)")
+    conn.commit()
+    conn.close()
+
+
+def clear_vec_chunks():
+    """Drops and recreates vec_chunks and chunk_meta tables."""
+    conn = get_vec_connection()
+    c = conn.cursor()
+    c.execute("DROP TABLE IF EXISTS vec_chunks")
+    c.execute("DROP TABLE IF EXISTS chunk_meta")
+    conn.commit()
+    conn.close()
+
+
+def insert_vec_chunk(chunk_id, filename, chunk_text, model, date_str, source_type, embedding):
+    """Inserts a chunk with its embedding vector.
+    
+    Args:
+        chunk_id: Integer ID (rowid for vec_chunks).
+        filename: Source filename.
+        chunk_text: The chunk content.
+        model: Product model extracted from chunk.
+        date_str: Date string (YYYY-MM-DD).
+        source_type: Source type (mail/trd/log/note/image/report).
+        embedding: numpy array or list of floats (dimension,).
+    """
+    import struct
+    conn = get_vec_connection()
+    c = conn.cursor()
+    # Insert metadata
+    c.execute("""
+    INSERT OR REPLACE INTO chunk_meta (id, filename, chunk_text, model, date_str, source_type)
+    VALUES (?, ?, ?, ?, ?, ?)
+    """, (chunk_id, filename, chunk_text, model, date_str, source_type))
+    # Insert vector
+    vec_bytes = struct.pack(f"{len(embedding)}f", *embedding)
+    c.execute("INSERT OR REPLACE INTO vec_chunks (rowid, embedding) VALUES (?, ?)",
+              (chunk_id, vec_bytes))
+    conn.commit()
+    conn.close()
+
+
+def insert_vec_chunks_batch(chunks_data):
+    """Batch insert chunks with embeddings.
+    
+    Args:
+        chunks_data: list of dicts with keys:
+            id, filename, chunk_text, model, date_str, source_type, embedding
+    """
+    import struct
+    if not chunks_data:
+        return
+    conn = get_vec_connection()
+    c = conn.cursor()
+    meta_batch = []
+    vec_batch = []
+    for chunk in chunks_data:
+        meta_batch.append((
+            chunk["id"], chunk["filename"], chunk["chunk_text"],
+            chunk["model"], chunk["date_str"], chunk["source_type"]
+        ))
+        vec_bytes = struct.pack(f"{len(chunk['embedding'])}f", *chunk["embedding"])
+        vec_batch.append((chunk["id"], vec_bytes))
+    c.executemany("""
+    INSERT OR REPLACE INTO chunk_meta (id, filename, chunk_text, model, date_str, source_type)
+    VALUES (?, ?, ?, ?, ?, ?)
+    """, meta_batch)
+    c.executemany("INSERT OR REPLACE INTO vec_chunks (rowid, embedding) VALUES (?, ?)", vec_batch)
+    conn.commit()
+    conn.close()
+
+
+def search_vec_chunks(query_embedding, model=None, date_from=None, source_type=None, limit=15):
+    """KNN vector search with optional metadata filtering.
+    
+    Args:
+        query_embedding: numpy array or list of floats (dimension,).
+        model: Optional model filter.
+        date_from: Optional date_str lower bound (YYYY-MM-DD).
+        source_type: Optional source type filter.
+        limit: Max results to return.
+        
+    Returns:
+        List of dicts: {filename, chunk_text, model, date_str, source_type, distance}
+    """
+    import struct
+    conn = get_vec_connection()
+    c = conn.cursor()
+
+    vec_bytes = struct.pack(f"{len(query_embedding)}f", *query_embedding)
+
+    # Fetch more candidates than needed to allow post-filtering
+    fetch_limit = limit * 5 if (model or date_from or source_type) else limit
+
+    try:
+        c.execute("""
+        SELECT v.rowid, v.distance
+        FROM vec_chunks v
+        WHERE v.embedding MATCH ?
+        ORDER BY v.distance
+        LIMIT ?
+        """, (vec_bytes, fetch_limit))
+        knn_results = c.fetchall()
+    except sqlite3.OperationalError:
+        conn.close()
+        return []
+
+    if not knn_results:
+        conn.close()
+        return []
+
+    # Fetch metadata for matched rowids
+    rowids = [r[0] for r in knn_results]
+    distances = {r[0]: r[1] for r in knn_results}
+
+    placeholders = ",".join("?" * len(rowids))
+    c.execute(f"""
+    SELECT id, filename, chunk_text, model, date_str, source_type
+    FROM chunk_meta
+    WHERE id IN ({placeholders})
+    """, rowids)
+    meta_rows = c.fetchall()
+    conn.close()
+
+    # Build results with filtering
+    results = []
+    for row in meta_rows:
+        rid, fname, text, m, d, src = row
+        # Apply filters
+        if model and model.upper() not in (m or "").upper():
+            continue
+        if date_from and (d or "") < date_from:
+            continue
+        if source_type and (src or "mail") != source_type:
+            continue
+        results.append({
+            "filename": fname,
+            "chunk_text": text,
+            "model": m,
+            "date_str": d,
+            "source_type": src or "mail",
+            "distance": distances.get(rid, 999),
+            "snippet": text[:200],
+        })
+
+    # Sort by distance (closest first) and limit
+    results.sort(key=lambda x: x["distance"])
+    return results[:limit]
+
+
+def get_vec_chunk_count():
+    """Returns the number of vectors in vec_chunks table."""
+    try:
+        conn = get_vec_connection()
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) FROM chunk_meta")
+        count = c.fetchone()[0]
+        conn.close()
+        return count
+    except (sqlite3.OperationalError, Exception):
+        return 0
