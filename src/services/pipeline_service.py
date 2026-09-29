@@ -59,12 +59,20 @@ def run_pipeline(force_reindex=False):
     indexed = _reindex_existing(force_reindex)
     print(f"📄 Indexed {indexed} existing md files into DB")
 
-    # Step 3: Rebuild chunk index for QA
-    chunk_count = _rebuild_chunks(force=force_reindex or processed_count > 0)
+    # Step 3: Rebuild chunk index for QA.
+    # Do NOT force here just because files were processed: _rebuild_chunks
+    # already detects source changes via fingerprint and rebuilds when needed.
+    # (force is reserved for an explicit full reindex.)
+    chunk_count = _rebuild_chunks(force=force_reindex)
     print(f"🔍 Built {chunk_count} chunks for QA search")
 
-    # Step 4: Rebuild embedding index for vector search
-    embedding_count = _rebuild_embeddings(force=force_reindex or processed_count > 0)
+    # Step 4: Rebuild embedding index for vector search.
+    # Likewise incremental: _rebuild_embeddings uses content-hash diffing to
+    # encode only new chunks and drop stale ones. Forcing on processed_count>0
+    # caused a full re-encode every sync AND wiped the vector store first
+    # (clear_vec_chunks), leaving chunk_meta at 0 whenever the long CPU encode
+    # was interrupted by a restart/next sync. See Redmine #66.
+    embedding_count = _rebuild_embeddings(force=force_reindex)
     print(f"🧠 Built {embedding_count} embeddings for vector search")
     
     return {
@@ -349,8 +357,11 @@ def _rebuild_embeddings(force=False):
     from src.core.embedder import LocalEmbedder, EMBEDDING_ENABLED
     from src.core.database import (
         get_connection, init_vec_db, clear_vec_chunks,
-        insert_vec_chunks_batch, get_vec_chunk_count
+        insert_vec_chunks_batch, get_vec_chunk_count,
+        get_existing_chunk_hashes, get_max_chunk_meta_id,
+        delete_vec_chunks_by_ids,
     )
+    import hashlib
 
     if not EMBEDDING_ENABLED:
         print("⏭️ Embedding disabled (EMBEDDING_ENABLED=false), skipping")
@@ -381,7 +392,7 @@ def _rebuild_embeddings(force=False):
         print("⚠️ Embedding model not available, skipping vector index build")
         return 0
 
-    # Read all chunks from FTS5 table
+    # Read all chunks from FTS5 table (source of truth)
     conn = get_connection()
     c = conn.cursor()
     try:
@@ -397,8 +408,6 @@ def _rebuild_embeddings(force=False):
         print("⚠️ No chunks to embed")
         return 0
 
-    print(f"🧠 Building embeddings for {len(all_chunks)} chunks...")
-
     # Initialize vector tables
     init_vec_db(dimension=embedder.dimension)
 
@@ -406,39 +415,93 @@ def _rebuild_embeddings(force=False):
         clear_vec_chunks()
         init_vec_db(dimension=embedder.dimension)
 
-    # Batch encode all chunk texts
-    texts = [row[2] for row in all_chunks]  # chunk_text column
-    
+    def _content_hash(filename, chunk_text, source_type):
+        # Stable key independent of FTS5 rowid (which is reassigned on rebuild).
+        h = hashlib.sha1()
+        h.update((source_type or "").encode("utf-8"))
+        h.update(b"\x00")
+        h.update((filename or "").encode("utf-8"))
+        h.update(b"\x00")
+        h.update((chunk_text or "").encode("utf-8"))
+        return h.hexdigest()
+
+    # Compute content hash for every current chunk
+    current = []  # list of (content_hash, row)
+    current_hashes = set()
+    for row in all_chunks:
+        _, filename, chunk_text, _, _, source_type = row
+        ch = _content_hash(filename, chunk_text, source_type)
+        current.append((ch, row))
+        current_hashes.add(ch)
+
+    # Existing embedded chunks: {content_hash: id}
+    existing = {} if force else get_existing_chunk_hashes()
+
+    # Determine chunks to add (new hashes) and stale ids to remove
+    to_encode = [(ch, row) for ch, row in current if ch not in existing]
+    stale_ids = [cid for ch, cid in existing.items() if ch not in current_hashes]
+
+    # Remove stale vectors (source content deleted/changed)
+    if stale_ids:
+        removed = delete_vec_chunks_by_ids(stale_ids)
+        print(f"🗑️ Removed {removed} stale embeddings")
+
+    if not to_encode:
+        total = get_vec_chunk_count()
+        print(f"⏭️ Embeddings incremental: 0 new chunks ({total} vectors total)")
+        # Still refresh fingerprint so future runs can fast-skip
+        _save_embeddings_fingerprint()
+        return total
+
+    mode = "full" if force else "incremental"
+    print(f"🧠 Building embeddings for {len(to_encode)} chunks ({mode}, {len(all_chunks)} total)...")
+
+    # Assign fresh ids above current max so they don't collide
+    next_id = get_max_chunk_meta_id() + 1
+
+    # Batch encode only the new chunk texts
+    texts = [row[2] for _, row in to_encode]  # chunk_text column
     try:
         embeddings = embedder.encode(texts, show_progress=True)
     except Exception as e:
         print(f"❌ Embedding encode failed: {e}")
-        return 0
+        return get_vec_chunk_count()
 
     # Batch insert into vec_chunks + chunk_meta
     BATCH_SIZE = 200
     count = 0
-    for i in range(0, len(all_chunks), BATCH_SIZE):
-        batch_chunks = all_chunks[i:i + BATCH_SIZE]
+    for i in range(0, len(to_encode), BATCH_SIZE):
+        batch = to_encode[i:i + BATCH_SIZE]
         batch_embeddings = embeddings[i:i + BATCH_SIZE]
-        
+
         chunks_data = []
-        for row, emb in zip(batch_chunks, batch_embeddings):
-            rowid, filename, chunk_text, model, date_str, source_type = row
+        for (ch, row), emb in zip(batch, batch_embeddings):
+            _, filename, chunk_text, model, date_str, source_type = row
             chunks_data.append({
-                "id": rowid,
+                "id": next_id,
                 "filename": filename,
                 "chunk_text": chunk_text,
                 "model": model or "",
                 "date_str": date_str or "",
                 "source_type": source_type or "mail",
+                "content_hash": ch,
                 "embedding": emb.tolist(),
             })
-        
+            next_id += 1
+
         insert_vec_chunks_batch(chunks_data)
         count += len(chunks_data)
 
     # Save fingerprint (use chunks fingerprint as reference)
+    _save_embeddings_fingerprint()
+
+    total = get_vec_chunk_count()
+    print(f"✅ Built {count} new embeddings (dim={embedder.dimension}, {total} vectors total)")
+    return total
+
+
+def _save_embeddings_fingerprint():
+    """Copies the current chunks fingerprint into the embeddings fingerprint file."""
     try:
         chunks_fingerprint_path = os.path.join(PROJECT_ROOT, "knowledge", ".chunks_fingerprint")
         embeddings_fingerprint_path = os.path.join(PROJECT_ROOT, "knowledge", ".embeddings_fingerprint")
@@ -449,6 +512,3 @@ def _rebuild_embeddings(force=False):
                 f.write(current_fp)
     except OSError:
         pass
-
-    print(f"✅ Built {count} embeddings (dim={embedder.dimension})")
-    return count
