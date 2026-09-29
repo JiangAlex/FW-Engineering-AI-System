@@ -11,10 +11,37 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration from environment
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
 EMBEDDING_DEVICE = os.getenv("EMBEDDING_DEVICE", "cpu")
 EMBEDDING_BATCH_SIZE = int(os.getenv("EMBEDDING_BATCH_SIZE", "64"))
 EMBEDDING_ENABLED = os.getenv("EMBEDDING_ENABLED", "true").lower() == "true"
+
+# Known bare model names that are missing their HuggingFace org prefix.
+# A stray shell env like `EMBEDDING_MODEL=bge-m3` (no "BAAI/") makes
+# sentence-transformers fail to resolve the model, silently disabling the
+# vector store (see Redmine #66). Normalize such names back to their full id.
+_MODEL_ALIASES = {
+    "bge-m3": "BAAI/bge-m3",
+    "bge-large-zh-v1.5": "BAAI/bge-large-zh-v1.5",
+    "bge-large-en-v1.5": "BAAI/bge-large-en-v1.5",
+    "bge-base-zh-v1.5": "BAAI/bge-base-zh-v1.5",
+}
+
+
+def _normalize_model_name(name):
+    """Repair a model id that lost its HF org prefix (e.g. 'bge-m3').
+
+    Only rewrites known bare names; anything already namespaced (contains '/')
+    or a local path is returned unchanged.
+    """
+    if not name:
+        return name
+    n = name.strip()
+    if "/" in n or os.path.sep in n:
+        return n  # already a full repo id or a local path
+    return _MODEL_ALIASES.get(n, n)
+
+
+EMBEDDING_MODEL = _normalize_model_name(os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3"))
 
 
 class LocalEmbedder:
@@ -34,7 +61,7 @@ class LocalEmbedder:
         if not EMBEDDING_ENABLED:
             raise RuntimeError("Embedding is disabled (EMBEDDING_ENABLED=false)")
 
-        model_name = model_name or EMBEDDING_MODEL
+        model_name = _normalize_model_name(model_name or EMBEDDING_MODEL)
         device = device or EMBEDDING_DEVICE
 
         print(f"🔄 Loading embedding model: {model_name} (device={device})...")
