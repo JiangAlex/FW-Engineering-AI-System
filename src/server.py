@@ -1,6 +1,7 @@
 import os
 import sys
 import re
+import time
 
 # Add project root to sys.path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,8 +26,24 @@ import asyncio
 app = FastAPI(title="FW Engineering AI System API")
 ai_client = get_ai_client()
 hybrid_retriever = HybridRetriever()
-conversation_history: list[dict] = []
-MAX_HISTORY = 5
+# NOTE: /api/ask is intentionally stateless. We do not keep a global
+# conversation history: each RAG answer is derived only from the chunks
+# retrieved for that specific question. A shared global history caused
+# cross-question context pollution (off-topic answers) and cross-client
+# leakage under concurrent use.
+
+# Prompt size control (to speed up CPU-bound Ollama inference).
+# Fewer/shorter chunks => shorter prompt => much faster prefill on CPU.
+# Tune via env: raise for better recall, lower for faster answers.
+#
+# Sized to keep the whole RAG prompt within a 4096-token context (Ollama's
+# default) so we get fast CPU prefill AND avoid exceed_context_size errors:
+#   5 chunks x 600 chars = 3000 chars of context (CJK ~1 token/char)
+#   + question + template  =>  ~3.5k tokens, safely under 4096.
+# The retriever still returns the full 15-candidate `sources` list to the UI;
+# only what is fed to the LLM is capped here.
+PROMPT_MAX_CHUNKS = int(os.getenv("PROMPT_MAX_CHUNKS", "5"))
+PROMPT_CHUNK_CHARS = int(os.getenv("PROMPT_CHUNK_CHARS", "600"))
 
 
 @app.on_event("startup")
@@ -92,10 +109,15 @@ def search(q: str = Query(..., min_length=1), model: Optional[str] = None, date_
 
 @app.post("/api/ask")
 def ask(req: QARequest):
+    _t_start = time.perf_counter()
+
+    def _elapsed_ms():
+        return round((time.perf_counter() - _t_start) * 1000)
+
     # Handle system meta questions (asking about database status, not knowledge content)
     meta_answer = _handle_meta_question(req.question)
     if meta_answer:
-        return {"answer": meta_answer, "sources": []}
+        return {"answer": meta_answer, "sources": [], "elapsed_ms": _elapsed_ms()}
 
     # Detect source type hints in question
     q_lower = req.question.lower()
@@ -107,15 +129,31 @@ def ask(req: QARequest):
     elif any(kw in q_lower for kw in ["image", "firmware image", "binary", "fw image"]):
         source_hint = "image"
 
+    # Model hard-filter: if the caller did not pin a model but the question
+    # names a specific product model (e.g. "EAP111"), detect it and use it as a
+    # retrieval filter for BOTH the BM25 and vector paths. Without this, the
+    # semantic (bge-m3) path pulls in chunks for adjacent models (EAP104 vs
+    # EAP111) that are vectorially close but wrong, causing off-topic answers.
+    effective_model = req.model
+    if not effective_model:
+        m = re.search(
+            r'(EAP\d{3}[a-zA-Z]?|OAP\d{3}[a-zA-Z]?|ECS\d{4}[a-zA-Z]?|'
+            r'JWS\d{4}[A-Z]?|JioWave\d+|SW\d{4}[A-Z]?|SC\d{2}[A-Z]?|Vnet\d{4}[A-Z]?)',
+            req.question, re.IGNORECASE,
+        )
+        if m:
+            from src.core.parser import _normalize_model
+            effective_model = _normalize_model(m.group(0))
+
     # Use HybridRetriever (BM25 + Vector + RRF) or fallback to BM25-only
     if req.use_embedding and hybrid_retriever.embedding_available:
         results = hybrid_retriever.search_with_supplement(
-            req.question, model=req.model, date_from=req.date_from,
+            req.question, model=effective_model, date_from=req.date_from,
             source_type=source_hint, limit=15
         )
     else:
         # Fallback: original BM25-only search with multi-source supplement
-        results = search_chunks(req.question, model=req.model, date_from=req.date_from, limit=15)
+        results = search_chunks(req.question, model=effective_model, date_from=req.date_from, limit=15)
 
         existing_sources = {r.get("source_type", "mail") for r in results}
         existing_filenames = {r["filename"] for r in results}
@@ -126,21 +164,14 @@ def ask(req: QARequest):
 
         for stype in supplement_types:
             if stype not in existing_sources:
-                extra = search_chunks(req.question, model=req.model, date_from=req.date_from, source_type=stype, limit=3)
+                extra = search_chunks(req.question, model=effective_model, date_from=req.date_from, source_type=stype, limit=3)
                 for r in extra:
                     if r["filename"] not in existing_filenames:
                         supplement_results.append(r)
                         existing_filenames.add(r["filename"])
 
         if source_hint:
-            import re as _re
-            from src.core.parser import _normalize_model
-            detected_model = req.model
-            if not detected_model:
-                m = _re.search(r'(EAP\d{3}[a-zA-Z]?|OAP\d{3}|ECS\d{4}[a-zA-Z]?|JWS\d{4}[A-Z]?|JioWave\d+|SW\d{4}[A-Z]?)', req.question, _re.IGNORECASE)
-                if m:
-                    detected_model = _normalize_model(m.group(0))
-            typed_results = search_chunks(req.question, model=detected_model, date_from=req.date_from, source_type=source_hint, limit=3)
+            typed_results = search_chunks(req.question, model=effective_model, date_from=req.date_from, source_type=source_hint, limit=3)
             for r in typed_results:
                 if r["filename"] not in existing_filenames:
                     supplement_results.append(r)
@@ -151,10 +182,16 @@ def ask(req: QARequest):
         results = results[:max_general] + supplement_results[:max_supplement]
 
     if not results:
-        return {"answer": "❌ 資料中無相關記錄。", "sources": []}
+        return {"answer": "❌ 資料中無相關記錄。", "sources": [], "elapsed_ms": _elapsed_ms()}
 
     sources = [{"filename": r["filename"], "snippet": r["snippet"], "date_str": r["date_str"], "source_type": r.get("source_type", "mail")} for r in results]
-    chunks_text = "\n\n---\n".join([f"[{r['filename']}]\n{r['chunk_text']}" for r in results])
+
+    # Limit prompt size: take top-N chunks and truncate each. Keeps CPU-bound
+    # Ollama prefill fast. `sources` above still shows the full result set to the user.
+    prompt_chunks = results[:PROMPT_MAX_CHUNKS]
+    chunks_text = "\n\n---\n".join(
+        [f"[{r['filename']}]\n{r['chunk_text'][:PROMPT_CHUNK_CHARS]}" for r in prompt_chunks]
+    )
 
     prompt = f"""你是一位工程知識助理，請嚴格根據以下資料（可能包含 mail、產測 Log、TRD 測試需求、週報、筆記等來源）回答問題。若資料中找不到答案，請回答「資料中無相關記錄」。
 
@@ -166,17 +203,26 @@ def ask(req: QARequest):
 
 要求：繁體中文回答，條列重點，標註資料來源類型，最後一句總結。"""
 
-    answer = ai_client.ask(prompt, history=conversation_history)
+    # RAG answers are stateless per request: each question is answered solely
+    # from the freshly retrieved chunks. We intentionally do NOT pass prior
+    # conversation history here, because the previous turn's `prompt` embedded
+    # its own retrieved chunks — carrying that forward pollutes the context of
+    # the next (unrelated) question and causes off-topic ("答非所問") answers.
+    _t_ai_start = time.perf_counter()
+    answer = ai_client.ask(prompt, history=None)
+    ai_ms = round((time.perf_counter() - _t_ai_start) * 1000)
     if answer.startswith("⚠️") or answer.startswith("❌"):
         # Fallback: organize matched chunks into bullet points
         answer = _fallback_answer(results, req.question)
-    else:
-        conversation_history.append({"role": "user", "content": req.question})
-        conversation_history.append({"role": "assistant", "content": answer})
-        while len(conversation_history) > MAX_HISTORY * 2:
-            conversation_history.pop(0)
 
-    return {"answer": answer, "sources": sources}
+    total_ms = _elapsed_ms()
+    return {
+        "answer": answer,
+        "sources": sources,
+        "elapsed_ms": total_ms,
+        "retrieval_ms": total_ms - ai_ms,
+        "ai_ms": ai_ms,
+    }
 
 
 def _fallback_answer(results, question):
@@ -196,10 +242,20 @@ def _fallback_answer(results, question):
 
 def _handle_meta_question(question):
     """Handle questions about system/database status (not knowledge content)."""
+    import re as _re
     q = question.lower()
-    meta_keywords = ["載入", "匯入", "索引", "收錄", "資料庫", "目前有", "有多少", "幾筆", "日期範圍", "最新", "最早"]
+
+    # If question contains a product model name, it's a knowledge question, not meta
+    if _re.search(r'(eap\d{3}|ecs\d{4}|oap\d{3}|jws\d{4}|sw\d{4}|ap\d{4}|jiowave\d+)', q):
+        return None
+
+    meta_keywords = ["載入", "匯入", "索引", "收錄", "資料庫", "目前有", "有多少", "幾筆", "日期範圍", "最早"]
     date_keywords = ["日期", "什麼時候", "到幾號", "到何時", "時間範圍"]
     count_keywords = ["幾筆", "多少", "幾封", "幾份", "數量", "統計"]
+
+    # "最新" only triggers meta when combined with system-related context
+    if "最新" in q and not any(kw in q for kw in ["版本", "fw", "firmware", "產測", "log", "release"]):
+        meta_keywords.append("最新")
 
     is_meta = any(kw in q for kw in meta_keywords)
     is_date_q = any(kw in q for kw in date_keywords)
@@ -280,9 +336,13 @@ def compare_fw(model: str, v1: str, v2: str):
     return {"comparison": FWService.compare_versions(model, v1, v2, ai_client)}
 
 @app.get("/api/report/generate")
-def generate_report():
-    report, filename = ReportService.generate_weekly_report(ai_client)
-    return {"report": report, "filename": filename}
+def generate_report(days: int = Query(7, ge=1, le=90)):
+    result = ReportService.generate_weekly_report(ai_client, days=days)
+    # The service returns (content, filename) on success, or an error string.
+    if isinstance(result, tuple):
+        report, filename = result
+        return {"report": report, "filename": filename}
+    return {"report": result, "filename": None}
 
 @app.get("/api/pipeline/sync")
 def sync_data():

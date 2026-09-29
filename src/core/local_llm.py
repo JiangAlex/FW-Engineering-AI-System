@@ -1,33 +1,40 @@
-"""Local LLM client using llama-cpp-python (Qwen2.5-7B-Instruct).
+"""Local LLM client using Ollama (OpenAI-compatible API).
 
 Provides a drop-in replacement for the MiniMax AIClient, running inference
-100% on-premise with zero data leaving the machine.
+100% on-premise via Ollama. Supports any model available in Ollama
+(e.g., qwen2.5:7b, qwen3:14b, gemma4).
 """
 
 import os
 import re
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
 # Configuration
-LLM_MODEL_PATH = os.getenv("LLM_MODEL_PATH", "models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf")
-LLM_N_CTX = int(os.getenv("LLM_N_CTX", "4096"))
-LLM_N_THREADS = int(os.getenv("LLM_N_THREADS", "8"))
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:7b")
 LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "1024"))
-
-# Resolve model path relative to project root
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if not os.path.isabs(LLM_MODEL_PATH):
-    LLM_MODEL_PATH = os.path.join(PROJECT_ROOT, LLM_MODEL_PATH)
+LLM_TIMEOUT = int(os.getenv("LLM_TIMEOUT", "300"))
+# Context window (prompt + completion) the Ollama model is loaded with.
+# Ollama defaults to 4096, which overflows on RAG prompts (retrieved chunks +
+# question) and especially the weekly-report prompt. qwen3:4b-instruct supports
+# long context, so we raise this. Tune via OLLAMA_NUM_CTX.
+OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "32768"))
+# Whether to sanitize (de-identify) prompts before sending to the on-premise
+# Ollama server. Defaults to on: even though Ollama runs on the internal
+# network, we strip personal info (emails, phones, names, sender headers) as
+# defense-in-depth. Set SANITIZE_LOCAL=false to send raw text.
+SANITIZE_LOCAL = os.getenv("SANITIZE_LOCAL", "true").lower() not in ("false", "0", "no")
 
 
 class LocalAIClient:
-    """Local LLM client using Qwen2.5-7B via llama-cpp-python.
-    
-    Singleton pattern to avoid loading the model multiple times (~5.5GB RAM).
+    """Local LLM client using Ollama's OpenAI-compatible API.
+
+    Singleton pattern to maintain a single client instance.
     Provides the same .ask() interface as the MiniMax AIClient.
-    
+
     Usage:
         client = LocalAIClient.get_instance()
         answer = client.ask("你好，請回答問題...")
@@ -36,33 +43,43 @@ class LocalAIClient:
     _instance = None
     _initialized = False
 
-    def __init__(self, model_path=None, n_ctx=None, n_threads=None):
-        model_path = model_path or LLM_MODEL_PATH
-        n_ctx = n_ctx or LLM_N_CTX
-        n_threads = n_threads or LLM_N_THREADS
+    def __init__(self, base_url=None, model=None):
+        self.base_url = base_url or OLLAMA_BASE_URL
+        self.model = model or OLLAMA_MODEL
+        self.api_url = f"{self.base_url}/v1/chat/completions"
 
-        if not os.path.exists(model_path):
-            raise RuntimeError(f"Model file not found: {model_path}")
-
-        print(f"🔄 Loading local LLM: {os.path.basename(model_path)} (n_ctx={n_ctx}, threads={n_threads})...")
+        # Verify Ollama is reachable and model is available
+        print(f"🔄 Connecting to Ollama: {self.base_url} (model={self.model})...")
         try:
-            from llama_cpp import Llama
-            self.llm = Llama(
-                model_path=model_path,
-                n_ctx=n_ctx,
-                n_threads=n_threads,
-                n_gpu_layers=0,  # CPU only
-                verbose=False,
-            )
+            resp = requests.get(f"{self.base_url}/api/tags", timeout=5)
+            if resp.status_code != 200:
+                raise RuntimeError(f"Ollama not reachable at {self.base_url}")
+
+            models = [m["name"] for m in resp.json().get("models", [])]
+            # Check model availability (handle tag variations like "qwen2.5:7b" vs "qwen2.5:7b-instruct")
+            model_base = self.model.split(":")[0]
+            if not any(model_base in m for m in models):
+                available = ", ".join(models) if models else "none"
+                raise RuntimeError(
+                    f"Model '{self.model}' not found in Ollama. Available: {available}. "
+                    f"Run: ollama pull {self.model}"
+                )
+
             self._initialized = True
-            print(f"✅ Local LLM loaded: {os.path.basename(model_path)}")
-        except Exception as e:
+            print(f"✅ Ollama connected: {self.model}")
+        except requests.ConnectionError:
             self._initialized = False
-            raise RuntimeError(f"Failed to load local LLM: {e}")
+            raise RuntimeError(
+                f"Cannot connect to Ollama at {self.base_url}. "
+                "Is Ollama running? Start with: ollama serve"
+            )
+        except RuntimeError:
+            self._initialized = False
+            raise
 
     @classmethod
     def get_instance(cls):
-        """Get or create singleton instance. Returns None if loading fails."""
+        """Get or create singleton instance. Returns None if connection fails."""
         if cls._instance is None:
             try:
                 cls._instance = cls()
@@ -74,8 +91,6 @@ class LocalAIClient:
     @classmethod
     def reset(cls):
         """Reset singleton (for testing or model switching)."""
-        if cls._instance and cls._instance._initialized:
-            del cls._instance.llm
         cls._instance = None
 
     @property
@@ -83,21 +98,28 @@ class LocalAIClient:
         return self._initialized
 
     def ask(self, prompt, temperature=0.3, history=None):
-        """Send a prompt to the local LLM and return the response.
-        
+        """Send a prompt to Ollama and return the response.
+
         Args:
             prompt: The user prompt (same format as MiniMax AIClient).
             temperature: Sampling temperature (0.0-1.0).
             history: Optional conversation history [{role, content}].
-            
+
         Returns:
             Generated text response, or error message string.
         """
         if not self._initialized:
             return "❌ Local LLM not initialized"
 
+        # De-identify prompt before sending to the on-premise Ollama server.
+        # Reuses the same sanitize() rules as the MiniMax path. Delayed import
+        # to avoid a circular import (ai_client imports local_llm lazily).
+        if SANITIZE_LOCAL:
+            from src.core.ai_client import sanitize
+            prompt = sanitize(prompt)
+
         messages = []
-        
+
         # System message for consistent behavior
         messages.append({
             "role": "system",
@@ -113,17 +135,34 @@ class LocalAIClient:
         messages.append({"role": "user", "content": prompt})
 
         try:
-            response = self.llm.create_chat_completion(
-                messages=messages,
-                temperature=temperature,
-                max_tokens=LLM_MAX_TOKENS,
-                stop=["<|im_end|>", "<|endoftext|>"],
+            resp = requests.post(
+                self.api_url,
+                json={
+                    "model": self.model,
+                    "messages": messages,
+                    "temperature": temperature,
+                    "max_tokens": LLM_MAX_TOKENS,
+                    "stream": False,
+                    # Raise context window above Ollama's 4096 default so RAG /
+                    # report prompts don't hit exceed_context_size_error.
+                    "options": {"num_ctx": OLLAMA_NUM_CTX},
+                },
+                timeout=LLM_TIMEOUT,
             )
-            text = response["choices"][0]["message"]["content"]
+
+            if resp.status_code != 200:
+                return f"⚠️ Ollama API error: {resp.status_code} - {resp.text[:200]}"
+
+            data = resp.json()
+            text = data["choices"][0]["message"]["content"]
 
             # Remove <think> tags if present
             text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
             return text.strip()
+        except requests.ConnectionError:
+            return "⚠️ Ollama connection lost. Is Ollama still running?"
+        except requests.Timeout:
+            return f"⚠️ Ollama request timed out ({LLM_TIMEOUT}s)"
         except Exception as e:
             return f"⚠️ Local LLM error: {str(e)}"
 
