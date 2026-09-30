@@ -7,7 +7,7 @@ import time
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_ROOT)
 
-from fastapi import FastAPI, Query, File, UploadFile, Form
+from fastapi import FastAPI, Query, File, UploadFile, Form, Depends, Header
 from fastapi.responses import FileResponse
 from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -24,6 +24,31 @@ from src.services.pipeline_service import run_pipeline
 import asyncio
 
 app = FastAPI(title="FW Engineering AI System API")
+
+# --- API token auth for write endpoints (P0 security, Redmine #69) ---
+# Set FW_API_TOKEN in the environment to require a token on write operations
+# (notes create/edit/delete, pipeline sync, adopt). Read endpoints stay open.
+# Accepts either "Authorization: Bearer <token>" or "X-API-Token: <token>".
+# If FW_API_TOKEN is unset, auth is disabled (with a startup warning) so the
+# app still runs, but you should set it to actually protect writes.
+FW_API_TOKEN = os.getenv("FW_API_TOKEN", "")
+if not FW_API_TOKEN:
+    print("⚠️  FW_API_TOKEN 未設定：寫入端點目前未受保護。請設定環境變數以啟用認證。")
+
+
+def require_token(authorization: str = Header(default=""),
+                  x_api_token: str = Header(default="")):
+    """Dependency: enforce API token on write endpoints when FW_API_TOKEN is set."""
+    if not FW_API_TOKEN:
+        return  # auth disabled (no token configured)
+    supplied = x_api_token or ""
+    if not supplied and authorization.startswith("Bearer "):
+        supplied = authorization[len("Bearer "):]
+    # constant-time compare to avoid timing leaks
+    import hmac
+    if not (supplied and hmac.compare_digest(supplied, FW_API_TOKEN)):
+        raise HTTPException(status_code=401, detail="Unauthorized: invalid or missing API token")
+
 ai_client = get_ai_client()
 hybrid_retriever = HybridRetriever()
 # NOTE: /api/ask is intentionally stateless. We do not keep a global
@@ -313,7 +338,7 @@ class AdoptRequest(BaseModel):
 
 
 @app.post("/api/ask/adopt")
-def adopt_answer(req: AdoptRequest):
+def adopt_answer(req: AdoptRequest, _auth=Depends(require_token)):
     """採納 AI 回答：將 Q&A 存為 note，供未來搜尋使用。"""
     from datetime import datetime
     init_notes_db()
@@ -345,7 +370,7 @@ def generate_report(days: int = Query(7, ge=1, le=90)):
     return {"report": result, "filename": None}
 
 @app.get("/api/pipeline/sync")
-def sync_data():
+def sync_data(_auth=Depends(require_token)):
     result = run_pipeline()
     if result["failed"] and result["processed"] == 0 and result["found"] > 0:
         status = "failed"
@@ -382,7 +407,7 @@ def list_notes():
 
 
 @app.post("/api/notes")
-def create_note(title: str = Form(...), content: str = Form(...), files: List[UploadFile] = File(default=[])):
+def create_note(title: str = Form(...), content: str = Form(...), files: List[UploadFile] = File(default=[]), _auth=Depends(require_token)):
     init_notes_db()
     # 儲存附檔
     attachments = []
@@ -412,7 +437,7 @@ def create_note(title: str = Form(...), content: str = Form(...), files: List[Up
 
 
 @app.put("/api/notes/{note_id}")
-def edit_note(note_id: int, title: str = Form(...), content: str = Form(...), files: List[UploadFile] = File(default=[])):
+def edit_note(note_id: int, title: str = Form(...), content: str = Form(...), files: List[UploadFile] = File(default=[]), _auth=Depends(require_token)):
     init_notes_db()
     # 儲存新附檔
     attachments = []
@@ -456,7 +481,7 @@ def edit_note(note_id: int, title: str = Form(...), content: str = Form(...), fi
 
 
 @app.delete("/api/notes/{note_id}")
-def remove_note(note_id: int):
+def remove_note(note_id: int, _auth=Depends(require_token)):
     init_notes_db()
     # 檢查是否為 GUIDE 筆記（不可刪除）
     from src.core.database import get_all_notes
@@ -483,15 +508,26 @@ def remove_note(note_id: int):
 
 @app.get("/api/download/{filename}")
 def download_file(filename: str):
-    paths = [
-        os.path.join(PROJECT_ROOT, "knowledge/report", filename),
-        os.path.join(PROJECT_ROOT, "knowledge/output", filename)
+    # Security: prevent path traversal. Reject any filename containing path
+    # separators or parent refs, and verify the resolved path stays within an
+    # allowed directory (defense in depth against encoded/edge cases).
+    if "/" in filename or "\\" in filename or ".." in filename:
+        raise HTTPException(status_code=400, detail="Invalid filename")
+    allowed_dirs = [
+        os.path.realpath(os.path.join(PROJECT_ROOT, "knowledge/report")),
+        os.path.realpath(os.path.join(PROJECT_ROOT, "knowledge/output")),
     ]
-    for path in paths:
-        if os.path.exists(path):
-            return FileResponse(path, filename=filename)
+    for base in allowed_dirs:
+        candidate = os.path.realpath(os.path.join(base, filename))
+        # candidate must be a file directly inside the allowed base dir
+        if os.path.dirname(candidate) == base and os.path.isfile(candidate):
+            return FileResponse(candidate, filename=filename)
     raise HTTPException(status_code=404, detail="File not found")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8010, timeout_graceful_shutdown=3)
+    # Network exposure is guarded by API-token auth (see require_token
+    # dependency). Host is overridable via FW_HOST; defaults to 0.0.0.0 so
+    # other devices can reach it, protected by the token.
+    host = os.getenv("FW_HOST", "0.0.0.0")
+    uvicorn.run(app, host=host, port=8010, timeout_graceful_shutdown=3)
