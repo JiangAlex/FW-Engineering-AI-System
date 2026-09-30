@@ -79,6 +79,26 @@
 
     <script>
 
+        // --- API token for write operations (P0 security, Redmine #69) ---
+        // The backend requires a token (FW_API_TOKEN) on write endpoints
+        // (notes create/edit/delete, pipeline sync, adopt). Store it in
+        // localStorage; prompt once if missing.
+        function getApiToken() {
+            let t = localStorage.getItem('fw_api_token') || '';
+            if (!t) {
+                t = (prompt('請輸入 API Token（寫入操作需要）：') || '').trim();
+                if (t) localStorage.setItem('fw_api_token', t);
+            }
+            return t;
+        }
+        // Returns headers object with the token; merges with any extra headers.
+        function authHeaders(extra) {
+            const h = Object.assign({}, extra || {});
+            const t = getApiToken();
+            if (t) h['X-API-Token'] = t;
+            return h;
+        }
+
         async function generateReport() {
             const btn = event.target;
             btn.disabled = true; btn.innerText = "生成中...";
@@ -89,7 +109,7 @@
                 const fd = new FormData();
                 fd.append('title', data.filename.replace('.md',''));
                 fd.append('content', data.report);
-                await fetch('/api/notes', { method:'POST', body: fd });
+                await fetch('/api/notes', { method:'POST', headers: authHeaders(), body: fd });
                 loadNotes();
                 alert("✅ 週報已生成並存入筆記！\n" + data.filename);
             } catch (e) { alert("生成失敗: " + e.message); }
@@ -100,7 +120,7 @@
             const btn = event.target;
             btn.disabled = true; btn.innerText = "同步中...";
             try {
-                const res = await fetch('/api/pipeline/sync');
+                const res = await fetch('/api/pipeline/sync', { headers: authHeaders() });
                 const data = await res.json();
                 alert(`同步完成！處理了 ${data.processed_files} 個新檔案。`);
                 fetchFWData();
@@ -153,7 +173,7 @@
             fd.append('content', content);
             const fileInput = document.getElementById('note-files');
             for (const f of fileInput.files) fd.append('files', f);
-            await fetch('/api/notes', { method:'POST', body: fd });
+            await fetch('/api/notes', { method:'POST', headers: authHeaders(), body: fd });
             document.getElementById('note-title').value = '';
             document.getElementById('note-content').value = '';
             fileInput.value = '';
@@ -162,7 +182,7 @@
 
         async function deleteNote(id) {
             if (!confirm('確定刪除？')) return;
-            await fetch('/api/notes/' + id, { method:'DELETE' });
+            await fetch('/api/notes/' + id, { method:'DELETE', headers: authHeaders() });
             loadNotes();
         }
 
@@ -197,7 +217,7 @@
                 fd.append('title', newTitle);
                 fd.append('content', newContent);
                 for (const f of fi.files) fd.append('files', f);
-                await fetch('/api/notes/' + id, { method:'PUT', body: fd });
+                await fetch('/api/notes/' + id, { method:'PUT', headers: authHeaders(), body: fd });
                 loadNotes();
             };
         }
@@ -354,13 +374,26 @@
             section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             try {
+                const _tStart = performance.now();
                 const res = await fetch('/api/ask', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ question: question })
                 });
                 const data = await res.json();
+                const clientMs = Math.round(performance.now() - _tStart);
                 answerDiv.innerText = data.answer;
+
+                // Response timing
+                const timingParts = [];
+                if (typeof data.elapsed_ms === 'number') timingParts.push('伺服器 ' + (data.elapsed_ms / 1000).toFixed(1) + 's');
+                if (typeof data.ai_ms === 'number') timingParts.push('AI ' + (data.ai_ms / 1000).toFixed(1) + 's');
+                if (typeof data.retrieval_ms === 'number') timingParts.push('檢索 ' + (data.retrieval_ms / 1000).toFixed(1) + 's');
+                timingParts.push('總計 ' + (clientMs / 1000).toFixed(1) + 's');
+                const timingDiv = document.createElement('div');
+                timingDiv.className = 'text-xs text-gray-400 mt-1';
+                timingDiv.innerText = '⏱ ' + timingParts.join(' · ');
+                answerDiv.appendChild(timingDiv);
 
                 // Adopt button
                 if (data.answer && !data.answer.startsWith('❌')) {
@@ -368,7 +401,7 @@
                     adoptBtn.className = 'mt-2 bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded';
                     adoptBtn.innerText = '⭐ 採納此回答';
                     adoptBtn.onclick = async () => {
-                        const r = await fetch('/api/ask/adopt', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({question:question, answer:data.answer}) });
+                        const r = await fetch('/api/ask/adopt', { method:'POST', headers:authHeaders({'Content-Type':'application/json'}), body:JSON.stringify({question:question, answer:data.answer}) });
                         if (r.ok) { adoptBtn.innerText = '✅ 已採納'; adoptBtn.disabled = true; adoptBtn.className = 'mt-2 bg-gray-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed'; loadNotes(); }
                     };
                     answerDiv.appendChild(adoptBtn);
