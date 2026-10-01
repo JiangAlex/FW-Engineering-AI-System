@@ -153,15 +153,8 @@ class FWService:
         if not docs:
             return f"❌ No matching records found for {model} comparing {v1} and {v2}."
 
-        prompt = f"""
-你是一位工程分析助理，請比較 {model} 的兩個版本：{v1} 與 {v2}。
-根據以下資料，總結它們之間的差異（新功能、修復、已知問題）。
-
-【資料】
-{"".join(docs[:3])}
-
-請輸出繁體中文 Markdown。
-"""
+        from src.core.prompts import fw_compare
+        prompt = fw_compare(model, v1, v2, "".join(docs[:3]))
         if ai_client:
             return ai_client.ask(prompt)
         return "⚠️ Fallback: Manual review required. Found matches in multiple documents."

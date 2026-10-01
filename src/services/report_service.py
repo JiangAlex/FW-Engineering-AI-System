@@ -117,45 +117,17 @@ class ReportService:
         # MAP: summarize each batch.
         batch_summaries = []
         for idx, batch in enumerate(batches, 1):
-            map_prompt = f"""你是一位工程專案經理助理。以下是本週部分工程 mail，請摘要成精簡條列。
-
-【資料】
-{chr(10).join(batch)}
-
-要求：
-- 針對出現的**每一個機種／專案**各列 1~2 條重點（狀態、議題、進度、風險）。
-- 機種名稱保持原文英數代號（例如 Pi7a、EAP111、OAP101、SC48P）。
-- 只輸出條列，不要前言或結論。"""
+            from src.core.prompts import weekly_map
+            map_prompt = weekly_map(chr(10).join(batch))
             s = ai_client.ask(map_prompt)
             batch_summaries.append(f"# 批次 {idx} 摘要\n{s}")
 
         merged_summaries = "\n\n".join(batch_summaries)
 
         # REDUCE: merge batch summaries into the final weekly report.
-        reduce_prompt = f"""你是一位工程專案經理，請根據以下「各批次摘要」統整成一份週報。
-
-【報告區間】{span_from} ~ {span_to}（最近 {days} 天）
-【本週郵件標題清單（共 {len(titles)} 封）】
-{checklist_block}
-
-【各批次摘要】
-{merged_summaries}
-
-請輸出繁體中文 Markdown：
-
-# Weekly Engineering Report
-
-## ✅ Key Projects
-## ✅ Key Issues
-## ✅ Progress
-## ✅ Risks
-## ✅ Conclusion
-
-要求：
-- 條列式、簡短、白話文。
-- **Key Projects 必須逐一涵蓋上方清單／摘要中出現的「每一個機種／專案」，即使某機種只有一封信也要列出，不可遺漏（例如 Pi7a、EAP111、OAP101、WAP12、JioWave62420、Pronto SC48P 等）。**
-- 每個機種至少一條說明其本週狀態或議題；若資訊不足，仍需列出機種名並註明「資訊有限」。
-- 機種名稱請保持原文英數代號（例如 Pi7a、EAP111）。"""
+        from src.core.prompts import weekly_reduce
+        reduce_prompt = weekly_reduce(span_from, span_to, days, len(titles),
+                                      checklist_block, merged_summaries)
         report_content = ai_client.ask(reduce_prompt)
 
         # Save report

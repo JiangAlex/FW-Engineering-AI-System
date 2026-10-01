@@ -218,15 +218,8 @@ def ask(req: QARequest):
         [f"[{r['filename']}]\n{r['chunk_text'][:PROMPT_CHUNK_CHARS]}" for r in prompt_chunks]
     )
 
-    prompt = f"""你是一位工程知識助理，請嚴格根據以下資料（可能包含 mail、產測 Log、TRD 測試需求、週報、筆記等來源）回答問題。若資料中找不到答案，請回答「資料中無相關記錄」。
-
-【資料】
-{chunks_text}
-
-【問題】
-{req.question}
-
-要求：繁體中文回答，條列重點，標註資料來源類型，最後一句總結。"""
+    from src.core.prompts import rag_qa
+    prompt = rag_qa(chunks_text, req.question)
 
     # RAG answers are stateless per request: each question is answered solely
     # from the freshly retrieved chunks. We intentionally do NOT pass prior

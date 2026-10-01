@@ -120,10 +120,11 @@ class LocalAIClient:
 
         messages = []
 
-        # System message for consistent behavior
+        # System message for consistent behavior (centralized in core.prompts)
+        from src.core.prompts import SYSTEM_MESSAGE
         messages.append({
             "role": "system",
-            "content": "你是一位專業的工程知識助理。請使用繁體中文回答，條列重點，簡潔明確。"
+            "content": SYSTEM_MESSAGE
         })
 
         # Add conversation history

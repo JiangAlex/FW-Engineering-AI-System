@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Daily report for FW-Engineering-AI-System.
+"""Daily mail-content report for FW-Engineering-AI-System.
 
-Collects knowledge-base + system status, asks the local LLM for a short
-analysis (graceful fallback to data-only if LLM is unavailable), writes a
-Markdown report under DailyReport/, and records it to Redmine.
+Analyzes the **last 7 days of engineering mail** (per-model progress / issues /
+risks), NOT the system's own health. Reuses report_service.generate_weekly_report
+(Map-Reduce over recent mail via the local LLM), writes the result under
+DailyReport/, and records it to Redmine.
 
 Redmine modes (env REPORT_REDMINE_MODE):
   - "append" (default): add today's report as a NOTE on a single long-lived
-    issue (env REPORT_REDMINE_ISSUE_ID). Tidy, one issue accumulates history.
+    issue (env REPORT_REDMINE_ISSUE_ID).
   - "new": open a fresh issue each day.
 
 Env:
@@ -15,166 +16,123 @@ Env:
   REPORT_REDMINE_PROJECT_ID           default 24 (FW-Engineering-AI-System)
   REPORT_REDMINE_MODE                 append | new   (default append)
   REPORT_REDMINE_ISSUE_ID             target issue id for append mode
+  REPORT_DAYS                         analysis window in days (default 7)
 """
 
 import os
 import sys
 import json
-import sqlite3
 import datetime
 import urllib.request
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DB_PATH = PROJECT_ROOT / "knowledge" / "index.db"
 REPORT_DIR = PROJECT_ROOT / "DailyReport"
-KNOWLEDGE = PROJECT_ROOT / "knowledge"
 
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
 # --------------------------------------------------------------------------
-#  Data collection
+#  Mail-content analysis (reuses the weekly report engine over recent mail)
 # --------------------------------------------------------------------------
-def collect_stats() -> dict:
-    """Collect knowledge-base + system status. Never raises; returns partial."""
-    stats = {"date": datetime.date.today().isoformat(), "errors": []}
-
-    # DB stats
-    try:
-        c = sqlite3.connect(str(DB_PATH))
-        stats["chunks_total"] = c.execute("SELECT COUNT(*) FROM chunks").fetchone()[0]
-        stats["by_source"] = dict(
-            c.execute("SELECT source_type, COUNT(*) FROM chunks GROUP BY source_type").fetchall()
-        )
-        try:
-            stats["vectors"] = c.execute("SELECT COUNT(*) FROM chunk_meta").fetchone()[0]
-        except sqlite3.OperationalError:
-            stats["vectors"] = 0
-        c.close()
-    except Exception as e:
-        stats["errors"].append(f"db: {e}")
-        stats.setdefault("chunks_total", None)
-
-    # fingerprints in sync?
-    try:
-        cf = (KNOWLEDGE / ".chunks_fingerprint").read_text().strip()
-        ef = (KNOWLEDGE / ".embeddings_fingerprint").read_text().strip()
-        stats["fingerprint_in_sync"] = (cf == ef)
-    except Exception as e:
-        stats["fingerprint_in_sync"] = None
-        stats["errors"].append(f"fingerprint: {e}")
-
-    # md file count
-    try:
-        md = KNOWLEDGE / "md"
-        stats["md_files"] = len([f for f in os.listdir(md) if f.endswith(".md")]) if md.is_dir() else 0
-    except Exception as e:
-        stats["errors"].append(f"md: {e}")
-
-    # vector store health: vectors should equal chunks
-    if stats.get("vectors") is not None and stats.get("chunks_total") is not None:
-        stats["vector_healthy"] = (stats["vectors"] == stats["chunks_total"])
-
-    # LLM connectivity
-    try:
-        from src.core.local_llm import LocalAIClient
-        client = LocalAIClient.get_instance()
-        stats["llm_ready"] = bool(client and client.is_ready)
-        stats["llm_model"] = getattr(client, "model", None) if client else None
-    except Exception as e:
-        stats["llm_ready"] = False
-        stats["errors"].append(f"llm: {e}")
-
-    return stats
-
-
-def load_prev_stats() -> dict | None:
-    """Load yesterday's (or the most recent previous) report stats JSON sidecar."""
+def _recent_dailyreports(days: int):
+    """Return list of (date_str, path) for DailyReport/*.md within the last `days`
+    days (excluding today's own file), newest first. Only real daily reports
+    (YYYY-MM-DD.md), not stats sidecars.
+    """
+    import re
+    out = []
     if not REPORT_DIR.is_dir():
-        return None
-    today = datetime.date.today().isoformat()
-    sidecars = sorted(
-        [p for p in REPORT_DIR.glob("*.stats.json") if p.stem.replace(".stats", "") < today],
-        reverse=True,
-    )
-    if not sidecars:
-        return None
-    try:
-        return json.loads(sidecars[0].read_text())
-    except Exception:
-        return None
+        return out
+    today = datetime.date.today()
+    cutoff = today - datetime.timedelta(days=days)
+    for p in REPORT_DIR.glob("*.md"):
+        m = re.fullmatch(r"(\d{4}-\d{2}-\d{2})", p.stem)
+        if not m:
+            continue
+        d = datetime.date.fromisoformat(m.group(1))
+        if cutoff <= d < today:  # exclude today (being generated now)
+            out.append((m.group(1), p))
+    out.sort(reverse=True)
+    return out
 
 
-def _delta(cur, prev, key):
-    if not prev or prev.get(key) is None or cur.get(key) is None:
-        return ""
-    d = cur[key] - prev[key]
-    return f"（{'+' if d >= 0 else ''}{d}）" if d else "（無變化）"
+def build_week_report(days: int) -> tuple[str, bool, str]:
+    """Produce the weekly analysis. Prefer aggregating the last `days` days of
+    existing DailyReports; if those don't cover a full week, fall back to
+    analyzing the last `days` days of mail directly.
+
+    Returns (markdown_body, ok, source_label).
+    """
+    reports = _recent_dailyreports(days)
+    # "covers a full week" = at least `days` distinct daily reports present.
+    if len(reports) >= days:
+        return _aggregate_dailyreports(reports, days)
+    # Fallback: analyze mail directly.
+    body, ok = build_mail_report(days)
+    return body, ok, f"最近 {days} 天 mail（DailyReport 不足一週，僅 {len(reports)} 份）"
 
 
-# --------------------------------------------------------------------------
-#  Report building
-# --------------------------------------------------------------------------
-def build_data_section(stats: dict, prev: dict | None) -> str:
-    by_src = stats.get("by_source", {}) or {}
-    src_lines = "\n".join(f"| {k} | {v} |" for k, v in sorted(by_src.items(), key=lambda x: -x[1]))
-    sync = stats.get("fingerprint_in_sync")
-    sync_txt = "✅ 同步" if sync else ("⚠️ 不同步" if sync is False else "❓ 未知")
-    vh = stats.get("vector_healthy")
-    vh_txt = "✅ 一致" if vh else ("⚠️ 不一致" if vh is False else "❓")
-    llm_txt = f"✅ {stats.get('llm_model')}" if stats.get("llm_ready") else "⚠️ 無法連線"
-
-    return f"""## 📊 知識庫狀態
-
-| 項目 | 值 |
-|------|------|
-| Chunks 總數 | {stats.get('chunks_total')} {_delta(stats, prev, 'chunks_total')} |
-| 向量庫 (chunk_meta) | {stats.get('vectors')} {_delta(stats, prev, 'vectors')} |
-| 向量/chunks 一致性 | {vh_txt} |
-| Fingerprint 同步 | {sync_txt} |
-| md 郵件檔數 | {stats.get('md_files')} {_delta(stats, prev, 'md_files')} |
-| 本地 LLM | {llm_txt} |
-
-### 來源分佈
-| 來源 | chunks |
-|------|--------|
-{src_lines}
-""" + (f"\n> ⚠️ 收集時發生問題：{'; '.join(stats['errors'])}\n" if stats.get("errors") else "")
-
-
-def build_llm_analysis(stats: dict, prev: dict | None) -> str:
-    """Ask the local LLM for a short analysis; fallback to a canned line."""
-    if not stats.get("llm_ready"):
-        return "_（本地 LLM 無法連線，本日略過 AI 分析，僅提供數據。）_"
+def _aggregate_dailyreports(reports, days: int) -> tuple[str, bool, str]:
+    """LLM-aggregate the last `days` DailyReports into one weekly analysis."""
     try:
         from src.core.local_llm import LocalAIClient
-        client = LocalAIClient.get_instance()
-        prompt = f"""你是韌體工程知識系統的維運助理。以下是今日與昨日的系統數據，請用繁體中文寫 3-5 條精簡的重點分析與建議（條列），聚焦變化、異常、健康度。不要重複原始數字表格。
-
-今日: {json.dumps(stats, ensure_ascii=False)}
-昨日: {json.dumps(prev, ensure_ascii=False) if prev else '無'}
-"""
-        ans = client.ask(prompt)
-        if ans and not ans.startswith("⚠️") and not ans.startswith("❌"):
-            return ans.strip()
-        return "_（LLM 回應異常，本日僅提供數據。）_"
     except Exception as e:
-        return f"_（LLM 分析失敗：{e}，本日僅提供數據。）_"
+        return f"❌ 無法載入 LLM 模組：{e}", False, "DailyReport 彙整"
+    client = LocalAIClient.get_instance()
+    if client is None or not client.is_ready:
+        return "❌ 本地 LLM 無法連線，無法彙整 DailyReport。", False, "DailyReport 彙整"
+
+    blocks = []
+    for d, p in reports:
+        try:
+            blocks.append(f"### {d}\n{p.read_text(encoding='utf-8')[:3000]}")
+        except Exception:
+            continue
+    from src.core.prompts import daily_aggregate
+    prompt = daily_aggregate(days, chr(10).join(blocks))
+    ans = client.ask(prompt)
+    if ans and not ans.startswith(("❌", "⚠️")):
+        return ans.strip(), True, f"彙整最近 {len(reports)} 份 DailyReport"
+    return (ans or "❌ 彙整產生空內容。"), False, "DailyReport 彙整"
 
 
-def build_report(stats: dict, prev: dict | None, analysis: str) -> str:
+def build_mail_report(days: int) -> tuple[str, bool]:
+    """Return (markdown_report, ok). Analyzes the last `days` days of mail.
+
+    ok=False means the analysis could not be produced (no mail / LLM down);
+    the returned string then explains why.
+    """
+    try:
+        from src.core.local_llm import LocalAIClient
+        from src.services.report_service import ReportService
+    except Exception as e:
+        return f"❌ 無法載入分析模組：{e}", False
+
+    client = LocalAIClient.get_instance()
+    if client is None or not client.is_ready:
+        return "❌ 本地 LLM（Ollama）無法連線，無法產生郵件分析。", False
+
+    result = ReportService.generate_weekly_report(client, days=days)
+    # generate_weekly_report returns (content, filename) on success, or an
+    # error string (e.g. no mail in window).
+    if isinstance(result, tuple):
+        content, _fname = result
+        if content and not content.startswith(("❌", "⚠️")):
+            return content, True
+        return (content or "❌ 分析產生空內容。"), False
+    return str(result), False
+
+
+def build_report(date_str: str, days: int, body: str, ok: bool, source: str) -> str:
     wd = "一二三四五六日"[datetime.date.today().weekday()]
-    return f"""# FW-Engineering-AI-System 每日報告 — {stats['date']}（週{wd}）
+    status = "" if ok else "\n> ⚠️ 本日分析未成功，詳見內文。\n"
+    return f"""# FW 工程週分析（每日產出）— {date_str}（週{wd}）
 
-> 資料來源：`knowledge/index.db`、fingerprint 檔、本地 LLM 連線探測。
-> 對比基線：{prev['date'] if prev else '無（首份報告）'}。
-
-{build_data_section(stats, prev)}
-
-## 🤖 AI 分析
-
-{analysis}
+> 範圍：最近 {days} 天的工程進展分析（含工作流狀態與時間）。
+> 資料來源：{source}。
+{status}
+{body}
 """
 
 
@@ -193,13 +151,13 @@ def _redmine_request(method: str, path: str, payload: dict | None):
                                           "Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
-            body = r.read().decode()
-            return (json.loads(body) if body else {}), None
+            raw = r.read().decode()
+            return (json.loads(raw) if raw else {}), None
     except Exception as e:
         return None, str(e)
 
 
-def post_to_redmine(report_md: str, stats: dict) -> str:
+def post_to_redmine(report_md: str, date_str: str) -> str:
     mode = os.getenv("REPORT_REDMINE_MODE", "append").lower()
     project_id = int(os.getenv("REPORT_REDMINE_PROJECT_ID", "24"))
 
@@ -212,7 +170,7 @@ def post_to_redmine(report_md: str, stats: dict) -> str:
         return f"appended to issue #{issue_id}" if not err else f"append 失敗: {err}"
     else:  # new
         payload = {"issue": {"project_id": project_id, "tracker_id": 4,
-                             "subject": f"[daily] FW-Engineering-AI-System 每日報告 {stats['date']}",
+                             "subject": f"[daily] FW 工程郵件分析日報 {date_str}",
                              "description": report_md}}
         res, err = _redmine_request("POST", "/issues.json", payload)
         if err:
@@ -224,24 +182,20 @@ def post_to_redmine(report_md: str, stats: dict) -> str:
 #  Main
 # --------------------------------------------------------------------------
 def main() -> int:
-    stats = collect_stats()
-    prev = load_prev_stats()
-    analysis = build_llm_analysis(stats, prev)
-    report = build_report(stats, prev, analysis)
+    date_str = datetime.date.today().isoformat()
+    days = int(os.getenv("REPORT_DAYS", "7"))
+
+    body, ok, source = build_week_report(days)
+    report = build_report(date_str, days, body, ok, source)
 
     REPORT_DIR.mkdir(exist_ok=True)
-    md_path = REPORT_DIR / f"{stats['date']}.md"
+    md_path = REPORT_DIR / f"{date_str}.md"
     md_path.write_text(report, encoding="utf-8")
-    (REPORT_DIR / f"{stats['date']}.stats.json").write_text(
-        json.dumps(stats, ensure_ascii=False), encoding="utf-8")
 
-    redmine_result = post_to_redmine(report, stats)
-    print(json.dumps({"ok": True, "report": str(md_path),
-                      "redmine": redmine_result,
-                      "chunks": stats.get("chunks_total"),
-                      "llm_ready": stats.get("llm_ready")},
-                     ensure_ascii=False))
-    return 0
+    redmine_result = post_to_redmine(report, date_str) if ok else "skipped (分析未成功)"
+    print(json.dumps({"ok": ok, "report": str(md_path), "redmine": redmine_result,
+                      "days": days, "source": source}, ensure_ascii=False))
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
