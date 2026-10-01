@@ -362,6 +362,26 @@ def generate_report(days: int = Query(7, ge=1, le=90)):
         return {"report": report, "filename": filename}
     return {"report": result, "filename": None}
 
+
+@app.get("/api/report/latest")
+def latest_report():
+    """Return the most recent report for GUI display: prefer the newest
+    DailyReport/*.md (daily mail analysis), else newest knowledge/report/*.md."""
+    import glob as _glob
+    candidates = []
+    for d in (os.path.join(PROJECT_ROOT, "DailyReport"),
+              os.path.join(PROJECT_ROOT, "knowledge", "report")):
+        for p in _glob.glob(os.path.join(d, "*.md")):
+            candidates.append(p)
+    if not candidates:
+        return {"report": None, "filename": None}
+    latest = max(candidates, key=os.path.getmtime)
+    try:
+        content = open(latest, "r", encoding="utf-8").read()
+    except OSError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return {"report": content, "filename": os.path.basename(latest)}
+
 @app.get("/api/pipeline/sync")
 def sync_data(_auth=Depends(require_token)):
     result = run_pipeline()

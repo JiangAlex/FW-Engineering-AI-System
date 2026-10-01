@@ -47,12 +47,18 @@
             <div class="space-x-2">
                 <button onclick="syncData()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">同步</button>
                 <button onclick="generateReport()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition">週報</button>
+                <button onclick="viewLatestReport()" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition">報告檢視</button>
             </div>
         </div>
     </nav>
 
     <div class="container mx-auto p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Report Viewer Section -->
+            <div id="report-section" class="bg-white p-6 rounded-lg shadow md:col-span-2" style="display:none;">
+                <h2 class="text-xl font-bold mb-4 border-b pb-2">📊 工程報告 <span id="report-filename" class="text-sm font-normal text-gray-500"></span></h2>
+                <div id="report-content" class="prose max-w-none text-sm overflow-auto"></div>
+            </div>
             <!-- AI Answer Section -->
             <div id="qa-answer-section" class="bg-white p-6 rounded-lg shadow md:col-span-2" style="display:none;">
                 <h2 class="text-xl font-bold mb-4 border-b pb-2">🤖 AI 回答</h2>
@@ -97,6 +103,64 @@
             const t = getApiToken();
             if (t) h['X-API-Token'] = t;
             return h;
+        }
+
+        // --- Report viewer (B): render latest report incl. workflow-status table ---
+        function escapeHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+        // Minimal markdown -> HTML: headings, tables, lists, bold. No external lib.
+        function mdToHtml(md) {
+            const lines = md.split('\n');
+            let html = '', i = 0;
+            const inline = (t) => escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            while (i < lines.length) {
+                let line = lines[i];
+                // table: a header row followed by a |---| separator
+                if (/^\s*\|.*\|\s*$/.test(line) && i+1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i+1])) {
+                    const cells = (r) => r.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+                    const head = cells(line);
+                    i += 2;
+                    let rows = '';
+                    while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
+                        rows += '<tr>' + cells(lines[i]).map(c=>`<td class="border px-2 py-1">${inline(c)}</td>`).join('') + '</tr>';
+                        i++;
+                    }
+                    html += '<table class="table-auto border-collapse border my-2 text-xs"><thead><tr>'
+                          + head.map(h=>`<th class="border px-2 py-1 bg-gray-100">${inline(h)}</th>`).join('')
+                          + '</tr></thead><tbody>' + rows + '</tbody></table>';
+                    continue;
+                }
+                let m;
+                if ((m = line.match(/^(#{1,4})\s+(.*)$/))) {
+                    const lv = m[1].length;
+                    const sz = {1:'text-xl',2:'text-lg',3:'text-base',4:'text-sm'}[lv];
+                    html += `<h${lv} class="${sz} font-bold mt-3 mb-1">${inline(m[2])}</h${lv}>`;
+                } else if (/^\s*[-*]\s+/.test(line)) {
+                    html += `<div class="ml-4">• ${inline(line.replace(/^\s*[-*]\s+/,''))}</div>`;
+                } else if (/^\s*>\s?/.test(line)) {
+                    html += `<div class="text-gray-500 border-l-4 pl-2 my-1">${inline(line.replace(/^\s*>\s?/,''))}</div>`;
+                } else if (line.trim() === '') {
+                    html += '<div class="h-2"></div>';
+                } else {
+                    html += `<div>${inline(line)}</div>`;
+                }
+                i++;
+            }
+            return html;
+        }
+        async function viewLatestReport() {
+            const sec = document.getElementById('report-section');
+            const box = document.getElementById('report-content');
+            sec.style.display = 'block';
+            box.innerHTML = '載入中...';
+            try {
+                const res = await fetch('/api/report/latest');
+                const data = await res.json();
+                if (!data.report) { box.innerHTML = '（尚無報告，請先產生週報或等每日報告產出）'; return; }
+                document.getElementById('report-filename').innerText = data.filename ? '— ' + data.filename : '';
+                box.innerHTML = mdToHtml(data.report);
+            } catch (e) { box.innerHTML = '載入失敗：' + e.message; }
         }
 
         async function generateReport() {
